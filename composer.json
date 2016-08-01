@@ -1,0 +1,11 @@
+{
+    "name": "komissarovea/hexlet-psr-linter",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Komissarov Eugene",
+            "email": "komissarovea@gmail.com"
+        }
+    ],
+    "require": {}
+}
