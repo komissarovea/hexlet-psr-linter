@@ -10,3 +10,4 @@ $name = trim(fgets(STDIN));
 $user = new HexletPsrLinter\User($name);
 
 var_dump($user);
+var_dump($name);
