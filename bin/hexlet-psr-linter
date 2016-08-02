@@ -1,6 +1,8 @@
 #!/usr/bin/env php
-
 <?php
+//First row explanation:
+//"Execute using PHP by looking up the path to the PHP interpreter automatically via env"
+//Example: ./bin/hexlet-psr-linter file.php
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
