@@ -1,5 +1,6 @@
 {
     "name": "komissarovea/hexlet-psr-linter",
+    "bin": ["bin/hexlet-psr-linter"],
     "type": "library",
     "authors": [
         {
@@ -7,5 +8,15 @@
             "email": "komissarovea@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "require-dev": {
+      "phpunit/phpunit": "*",
+      "squizlabs/php_codesniffer": "*",
+      "codeclimate/php-test-reporter": "dev-master"
+    },
+    "autoload": {
+      "psr-4": {
+        "HexletPsrLinter\\": "src/"
+      }
+    }
 }
