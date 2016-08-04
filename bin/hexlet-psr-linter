@@ -8,6 +8,15 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-//echo "\033[32m some colored text \033[0m some white text \n";
-$linter = new HexletPsrLinter\Linter($argv);
+$cmd = new Commando\Command();
+//$cmd->doNotTrapErrors();
+$cmd->option()
+    ->require()
+    ->describedAs('A file to lint.')
+    ->expectsFile();
+if (empty(array_slice($argv, 1))) {
+     $cmd->printHelp();
+}
+$args = $cmd->getArgumentValues();
+$linter = new HexletPsrLinter\Linter($args[0]);
 echo $linter->getMessage();
