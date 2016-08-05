@@ -17,6 +17,9 @@
       "squizlabs/php_codesniffer": "*",
       "codeclimate/php-test-reporter": "dev-master"
     },
+    "commented-by-kea": {
+      "psy/psysh": "@stable"
+    },
     "autoload": {
       "psr-4": {
         "HexletPsrLinter\\": "src/"

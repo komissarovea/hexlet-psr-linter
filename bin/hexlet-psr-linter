@@ -3,13 +3,14 @@
 // First row explanation:
 // "Execute using PHP by looking up the path
 // to the PHP interpreter automatically via env"
-// Example1: ./bin/hexlet-psr-linter file.php
-// Example2: hexlet-psr-linter file.php
+// Example1: ./hexlet-psr-linter file.php
+// Example2: bin/hexlet-psr-linter file.php
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $cmd = new Commando\Command();
-//$cmd->doNotTrapErrors();
+// eval(\Psy\sh());
+// $cmd->doNotTrapErrors();
 $cmd->option()
     ->require()
     ->describedAs('A file to lint.')
@@ -18,5 +19,7 @@ if (empty(array_slice($argv, 1))) {
      $cmd->printHelp();
 }
 $args = $cmd->getArgumentValues();
-$linter = new HexletPsrLinter\Linter($args[0]);
-echo $linter->getMessage();
+$flags = $cmd->getFlagValues();
+$linter = new HexletPsrLinter\Linter($args, $flags);
+$linter->lint();
+echo $linter->getOutput();
