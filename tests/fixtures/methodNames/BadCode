@@ -37,3 +37,8 @@ class BadCode
         echo "oneGoodMethod";
     }
 }
+
+function fakeFUNCTION()
+{
+    echo "FakeMethod3";
+}

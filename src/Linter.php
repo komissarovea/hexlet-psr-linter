@@ -13,23 +13,20 @@ use Colors\Color;
  */
 class Linter
 {
-    private $args;
-    private $flags;
     private $parser;
     private $traverser;
     private $visitor;
 
+    private $input = "";
     private $errors = [];
-    private $success = [];
     private $output = "";
 
-    public function __construct($args, $flags)
+    public function __construct($input)
     {
-        $this->args = $args;
-        $this->flags = $flags;
+        $this->input = $input;
         $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $this->traverser = new NodeTraverser();
-        $this->visitor = new NodeVisitor();
+        $this->visitor = new HplNodeVisitor();
         $this->traverser->addVisitor($this->visitor);
     }
 
@@ -45,60 +42,38 @@ class Linter
 
     public function lint()
     {
-        $this->output = "";
-        $filePath = $this->args[0];
-        if (is_readable($filePath) && is_file($filePath)) {
-            $this->output = (new Color($filePath))->white->underline.PHP_EOL;
-            $code = file_get_contents($filePath);
-            try {
-                $stmts = $this->parser->parse($code);
-                if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
-                    $message = "PHP statements were not found in the file!".PHP_EOL;
-                    $this->output .= (new Color($message))->red;
-                    return false;
-                }
-                $this->traverser->traverse($stmts);
-                foreach ($this->visitor->getMethodStmts() as $node) {
-                    $this->processMethodStmt($node);
-                }
-                $errorsCount = count($this->errors);
-                if ($errorsCount > 0) {
-                    $message = "Total errors: $errorsCount".PHP_EOL;
-                    $this->output .= (new Color($message))->red;
-                    return false;
-                }
-            } catch (Error $e) {
-                $message = 'Parse Error: '.$e->getMessage().PHP_EOL;
-                $this->output = (new Color($message))->red;
-                return false;
-            }
-        } else {
-            $message = "'$filePath' is not readable file".PHP_EOL;
-            $this->output = (new Color($message))->red;
+        $stmts = $this->parser->parse($this->input);
+        if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
+            throw new HplException("PHP statements were not found!");
+        }
+        $this->traverser->traverse($stmts);
+        $methodStmts = $this->visitor->getMethodStmts();
+
+        $this->errors = array_filter($methodStmts, function ($node) {
+            return !\PHP_CodeSniffer::isCamelCaps($node->name);
+        });
+
+        $this->output = array_reduce($this->errors, function ($acc, $node) {
+            $line = $node->getLine().": ";
+            $acc .= (new Color($line))->blue;
+            $acc .= (new Color(sprintf("%-8s", 'error')))->red;
+            $message = "Method name \"$node->name\" is incorrect. Check PSR-2.";
+            $acc .= (new Color($message))->white.PHP_EOL;
+            return $acc;
+        }, "");
+        
+        $errorsCount = count($this->errors);
+        $message = "Total errors: $errorsCount".PHP_EOL;
+        if ($errorsCount > 0) {
+            $this->output .= (new Color($message))->red;
             return false;
         }
+        $this->output .= (new Color($message))->green;
         return true;
-    }
-
-    private function processMethodStmt($node)
-    {
-        $line = $node->getLine().": ";
-        $this->output .= (new Color($line))->blue;
-        if (\PHP_CodeSniffer::isCamelCaps($node->name)) {
-            $this->success[] = $node;
-            $this->output .= (new Color(sprintf("%-8s", 'success')))->green;
-            $message = "Method name \"$node->name\" is correct.";
-            $this->output .= (new Color($message))->white.PHP_EOL;
-        } else {
-            $this->errors[] = $node;
-            $this->output .= (new Color(sprintf("%-8s", 'error')))->red;
-            $message = "Method name \"$node->name\" is incorrect. Check PSR-2.";
-            $this->output .= (new Color($message))->white.PHP_EOL;
-        }
     }
 
     public function __toString()
     {
-        return strval($this->output);
+        return strval($this->getOutput());
     }
 }

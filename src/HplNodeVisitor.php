@@ -16,19 +16,18 @@ define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
 /**
  * Visitor for PhpParser\NodeTraverser
  */
-class NodeVisitor extends NodeVisitorAbstract
+class HplNodeVisitor extends NodeVisitorAbstract
 {
-    const CONSTANT = 'значение константы';
+    //const CONSTANT = 'значение константы';
     private $methodStmts = [];
 
     public function leaveNode(Node $node)
     {
-        //echo get_class($node).PHP_EOL;
-
-        if ($node instanceof Node\FunctionLike
+        //echo get_class($node).$node->name.PHP_EOL;
+        if (($node instanceof Node\Stmt\ClassMethod
+            || $node instanceof Node\Stmt\Function_)
             && !in_array($node->name, MAGIC_METHODS)) {
               $this->methodStmts[] = $node;
-              //echo $node->name.PHP_EOL;
         }
     }
 
