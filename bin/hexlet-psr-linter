@@ -21,5 +21,6 @@ if (empty(array_slice($argv, 1))) {
 $args = $cmd->getArgumentValues();
 $flags = $cmd->getFlagValues();
 $linter = new HexletPsrLinter\Linter($args, $flags);
-$linter->lint();
+$result = $linter->lint();
 echo $linter->getOutput();
+exit($result ? 0: 1);
