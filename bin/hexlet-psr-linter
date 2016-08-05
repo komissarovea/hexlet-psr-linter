@@ -5,21 +5,30 @@
 // to the PHP interpreter automatically via env"
 // Example1: ./hexlet-psr-linter file.php
 // Example2: bin/hexlet-psr-linter file.php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use function \HexletPsrLinter\Utils\formatErrorMessage;
+
 $cmd = new Commando\Command();
-// eval(\Psy\sh());
-// $cmd->doNotTrapErrors();
-$cmd->option()
-    ->require()
+$cmd->argument()
+    ->title('<file>')
     ->describedAs('A file to lint.')
     ->expectsFile();
-if (empty(array_slice($argv, 1))) {
-     $cmd->printHelp();
-}
+// if (empty(array_slice($argv, 1))) {
+//      $cmd->printHelp();
+// }
 $args = $cmd->getArgumentValues();
+$args = array_filter($args, function ($item) {
+    return !is_null($item);
+});
 $flags = $cmd->getFlagValues();
+if (empty($args)) {
+    $cmd->printHelp();
+    $message = "ERROR: Required argument <file> must be specified";
+    echo formatErrorMessage($message);
+    return 1;
+}
+
 $linter = new HexletPsrLinter\Linter($args, $flags);
 $result = $linter->lint();
 echo $linter->getOutput();

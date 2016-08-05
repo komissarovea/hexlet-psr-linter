@@ -21,6 +21,9 @@
       "psy/psysh": "@stable"
     },
     "autoload": {
+      "files": [
+          "src/Utils.php"
+      ],
       "psr-4": {
         "HexletPsrLinter\\": "src/"
       }
