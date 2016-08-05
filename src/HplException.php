@@ -3,7 +3,7 @@
 namespace HexletPsrLinter;
 
 /**
- * Visitor for PhpParser\NodeTraverser
+ * Base class for HexletPsrLinter exceptions
  */
 class HplException extends \Exception
 {

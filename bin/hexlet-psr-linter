@@ -1,10 +1,6 @@
 #!/usr/bin/env php
 <?php
-// First row explanation:
-// "Execute using PHP by looking up the path
-// to the PHP interpreter automatically via env"
-// Example1: ./hexlet-psr-linter file.php
-// Example2: bin/hexlet-psr-linter file.php
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Colors\Color;
@@ -16,10 +12,12 @@ try {
     $filePath = "";
     $fileContent = readCliFileContent($filePath);
     echo (new Color($filePath))->white->underline.PHP_EOL;
+
     $linter = new HexletPsrLinter\Linter($fileContent);
-    $result = $linter->lint();
-    echo $linter->getOutput();
-    exit($result ? 0: 1);
+    $report = $linter->lint();
+    echo $report->getOutput();
+    
+    exit(count($report->getErrors()) > 0 ? 1: 0);
 } catch (Throwable $e) {
     //echo get_class($e).PHP_EOL;
     echo formatErrorMessage($e->getMessage());
