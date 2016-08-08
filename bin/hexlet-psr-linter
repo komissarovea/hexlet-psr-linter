@@ -7,17 +7,33 @@ use Colors\Color;
 
 use function \HexletPsrLinter\lint;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
-use function \HexletPsrLinter\Utils\readCliFileContent;
+use function \HexletPsrLinter\Utils\getFilesByPath;
 
 try {
-    $filePath = "";
-    $fileContent = readCliFileContent($filePath);
-    echo (new Color($filePath))->white->underline.PHP_EOL;
+    $exitCode = 0;
 
-    $report = lint($fileContent);
-    echo $report->getOutput();
+    $cmd = new \Commando\Command();
+    $cmd->doNotTrapErrors();
+    $cmd->argument()
+        ->title('<path>')
+        ->describedAs('A file or folder to lint.')
+        ->require();
 
-    exit(count($report->getErrors()) > 0 ? 1: 0);
+    $args = $cmd->getArgumentValues();
+    $path = $args[0];
+
+    $files = getFilesByPath($path);
+    foreach ($files as $file) {
+        echo (new Color(realpath($file)))->white->underline.PHP_EOL;
+        $fileContent = file_get_contents($file);
+        $report = lint($fileContent);
+        echo $report->getOutput();
+        if ($report->getErrors() > 0) {
+            $exitCode = 1;
+        }
+    }
+
+    exit($exitCode);
 } catch (Throwable $e) {
     //echo get_class($e).PHP_EOL;
     echo formatErrorMessage($e->getMessage());

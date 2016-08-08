@@ -8,6 +8,8 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use Colors\Color;
 
+use function \HexletPsrLinter\Utils\formatErrorMessage;
+
 function lint($input)
 {
     $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
@@ -17,7 +19,7 @@ function lint($input)
 
     $stmts = $parser->parse($input);
     if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
-        throw new HplException("PHP statements were not found!");
+        echo formatErrorMessage("PHP statements were not found!");
     }
     $traverser->traverse($stmts);
     $errors = $visitor->getErrors();

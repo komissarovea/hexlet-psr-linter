@@ -13,23 +13,26 @@ function formatErrorMessage($message, $addEOL = true)
     return $result;
 }
 
-function readCliFileContent(&$filePath)
+function getFilesByPath($path)
 {
-    $cmd = new \Commando\Command();
-    $cmd->doNotTrapErrors();
-    $cmd->argument()
-        ->title('<file>')
-        ->describedAs('A file to lint.')
-        ->expectsFile()
-        ->require();
-    $args = $cmd->getArgumentValues();
-    $flags = $cmd->getFlagValues();
-    $filePath = $args[0];
-    if (is_readable($filePath) && is_file($filePath)) {
-        return file_get_contents($filePath);
+    if (is_readable($path)) {
+        if (is_file($path)) {
+            return [$path];
+        } else {
+            $arr = [];
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+            foreach ($iterator as $item) {
+                if ($item->isFile()) {
+                    $arr[] = $item->getPathname();
+                }
+            }
+            // $arr = array_filter(iterator_to_array($iterator), function ($item) {
+            //     return $item->isFile();
+            // });
+            //print_r($arr);
+            return $arr;
+        }
     } else {
-        throw new \HexletPsrLinter\HplException("'$filePath' is not readable file", 1);
-        // echo formatErrorMessage("'$filePath' is not readable file");
-        // return 1;
+        throw new \HexletPsrLinter\Exceptions\FileException("'$path' is not readable!");
     }
 }
