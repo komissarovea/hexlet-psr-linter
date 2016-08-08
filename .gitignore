@@ -2,3 +2,4 @@
 logs
 *.swo
 *.swp
+NotReadableFile.php

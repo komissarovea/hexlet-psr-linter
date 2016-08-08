@@ -25,19 +25,22 @@ try {
 
     $files = getFilesByPath($path);
     foreach ($files as $file) {
-        echo (new Color(realpath($file)))->white->underline.PHP_EOL;
+        echo (new Color(realpath($file)))->white->underline . PHP_EOL;
         $fileContent = file_get_contents($file);
         $errors = lint($fileContent);
-        $report = buildReport($errors);
-        echo $report->getOutput();
-        if ($report->getErrors() > 0) {
+        if (!is_null($errors)) {
+            $report = buildReport($errors);
+            echo $report->getOutput() . PHP_EOL;
+        }
+
+        if (is_null($errors) || count($errors) > 0) {
             $exitCode = 1;
         }
     }
 
     exit($exitCode);
 } catch (Throwable $e) {
-    //echo get_class($e).PHP_EOL;
+    //echo get_class($e) . PHP_EOL;
     echo formatErrorMessage($e->getMessage());
     return 1;
 }

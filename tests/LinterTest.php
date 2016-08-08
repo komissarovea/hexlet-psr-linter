@@ -21,4 +21,20 @@ class LinterTest extends \PHPUnit\Framework\TestCase
         $errors = lint(file_get_contents($path));
         $this->assertEquals(1, count($errors));
     }
+
+    public function testInvalidFile()
+    {
+        $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'InvalidPHP']);
+        $errors = lint(file_get_contents($path));
+        $this->assertEquals(1, count($errors));
+        $this->assertEquals('global', $errors[0]->getStmtName());
+    }
+
+    public function testNotPhpFile()
+    {
+        $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'NotPHP']);
+        $errors = lint(file_get_contents($path));
+        $this->assertEquals(1, count($errors));
+        $this->assertEquals('global', $errors[0]->getStmtName());
+    }
 }

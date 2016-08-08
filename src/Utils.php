@@ -22,14 +22,10 @@ function getFilesByPath($path)
             $arr = [];
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
             foreach ($iterator as $item) {
-                if ($item->isFile()) {
+                if ($item->isFile() && $item->isReadable()) {
                     $arr[] = $item->getPathname();
                 }
             }
-            // $arr = array_filter(iterator_to_array($iterator), function ($item) {
-            //     return $item->isFile();
-            // });
-            //print_r($arr);
             return $arr;
         }
     } else {

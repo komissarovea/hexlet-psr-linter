@@ -8,21 +8,25 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use Colors\Color;
 
-use function \HexletPsrLinter\Utils\formatErrorMessage;
-
 function lint($input)
 {
-    $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-    $traverser = new NodeTraverser();
-    $visitor = new HplNodeVisitor(BASE_RULES);
-    $traverser->addVisitor($visitor);
+    $errors = [];
+    try {
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $traverser = new NodeTraverser();
+        $visitor = new HplNodeVisitor(BASE_RULES);
+        $traverser->addVisitor($visitor);
 
-    $stmts = $parser->parse($input);
-    if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
-        echo formatErrorMessage("PHP statements were not found!");
+        $stmts = $parser->parse($input);
+        if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
+            $errors[] = new HplError('error', -1, 'global', null, 'PHP statements were not found.');
+        } else {
+            $traverser->traverse($stmts);
+            $errors = $visitor->getErrors();
+        }
+    } catch (\Throwable $e) {
+        $errors[] = new HplError('error', -1, 'global', null, $e->getMessage());
     }
-    $traverser->traverse($stmts);
-    $errors = $visitor->getErrors();
     return $errors;
 }
 
@@ -30,7 +34,7 @@ function buildReport($errors)
 {
     $output = "";
     $errorsCount = count($errors);
-    $footer = "Total errors: $errorsCount".PHP_EOL;
+    $footer = "Total errors: $errorsCount" . PHP_EOL;
     $footer = $errorsCount > 0 ? (new Color($footer))->red
       : (new Color($footer))->green;
     if ($errorsCount > 0) {
@@ -40,7 +44,7 @@ function buildReport($errors)
             $statement = "Statement: '{$error->getStmtName()}'.";
             $message = (new Color($error->getMessage()))->white;
             //$acc = implode(PHP_EOL, [$acc, "$line $errorMark $message"]);
-            $acc = "$acc $line $errorMark $statement $message".PHP_EOL;
+            $acc = "$acc $line $errorMark $statement $message" . PHP_EOL;
             return $acc;
         }, "");
     }
