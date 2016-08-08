@@ -3,12 +3,12 @@
 namespace HexletPsrLinter;
 
 /**
- * Base class for HexletPsrLinter exceptions
+ * Report logic
  */
 class HplReport
 {
-    private $errors = [];
-    private $output = "";
+    private $errors;
+    private $output;
 
     public function __construct($errors, $output)
     {

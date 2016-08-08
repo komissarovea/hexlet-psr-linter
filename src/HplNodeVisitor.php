@@ -18,21 +18,27 @@ define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
  */
 class HplNodeVisitor extends NodeVisitorAbstract
 {
-    //const CONSTANT = 'значение константы';
-    private $methodStmts = [];
+    private $errors = [];
 
     public function leaveNode(Node $node)
     {
-        //echo get_class($node).$node->name.PHP_EOL;
-        if (($node instanceof Node\Stmt\ClassMethod
-            || $node instanceof Node\Stmt\Function_)
-            && !in_array($node->name, MAGIC_METHODS)) {
-              $this->methodStmts[] = $node;
+        if (isset($node->name) && !in_array($node->name, MAGIC_METHODS)
+          && $node instanceof Node\FunctionLike
+          && !\PHP_CodeSniffer::isCamelCaps($node->name)) {
+                  $this->errors[] = new HplError(
+                      'error',
+                      $node->getLine(),
+                      $node->name,
+                      get_class($node),
+                      "Method name \"$node->name\" is incorrect. Check PSR-2."
+                  );
+          // $node instanceof Node\Stmt\ClassMethod
+          // $node instanceof Node\Stmt\Function_
         }
     }
 
-    public function getMethodStmts()
+    public function getErrors()
     {
-        return $this->methodStmts;
+        return $this->errors;
     }
 }

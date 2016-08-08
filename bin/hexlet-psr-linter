@@ -5,6 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Colors\Color;
 
+use function \HexletPsrLinter\lint;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\readCliFileContent;
 
@@ -13,10 +14,9 @@ try {
     $fileContent = readCliFileContent($filePath);
     echo (new Color($filePath))->white->underline.PHP_EOL;
 
-    $linter = new HexletPsrLinter\Linter($fileContent);
-    $report = $linter->lint();
+    $report = lint($fileContent);
     echo $report->getOutput();
-    
+
     exit(count($report->getErrors()) > 0 ? 1: 0);
 } catch (Throwable $e) {
     //echo get_class($e).PHP_EOL;

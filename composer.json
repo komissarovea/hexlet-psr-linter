@@ -15,13 +15,12 @@
     "require-dev": {
       "phpunit/phpunit": "*",
       "squizlabs/php_codesniffer": "*",
-      "codeclimate/php-test-reporter": "dev-master"
-    },
-    "commented-by-kea": {
+      "codeclimate/php-test-reporter": "dev-master",
       "psy/psysh": "@stable"
     },
     "autoload": {
       "files": [
+          "src/Linter.php",
           "src/Utils.php"
       ],
       "psr-4": {
