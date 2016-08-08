@@ -9,14 +9,21 @@
     ],
     "bin": ["bin/hexlet-psr-linter"],
     "require": {
-      "nikic/php-parser": "*"
+      "nikic/php-parser": "*",
+      "nategood/commando": "*"
     },
     "require-dev": {
       "phpunit/phpunit": "*",
       "squizlabs/php_codesniffer": "*",
-      "codeclimate/php-test-reporter": "dev-master"
+      "codeclimate/php-test-reporter": "dev-master",
+      "psy/psysh": "@stable"
     },
     "autoload": {
+      "files": [
+          "src/Linter.php",
+          "src/BaseRules.php",
+          "src/Utils.php"
+      ],
       "psr-4": {
         "HexletPsrLinter\\": "src/"
       }

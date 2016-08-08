@@ -1,0 +1,8 @@
+<?php
+
+namespace HexletPsrLinter;
+
+public function fakeFUNCTION()
+{
+    echo "FakeMethod3";
+}

@@ -1,0 +1,44 @@
+<?php
+
+namespace HexletPsrLinter;
+
+/**
+ * Code with wrong method names
+ */
+class BadCode
+{
+    public function __construct($argument)
+    {
+        echo "__construct";
+    }
+
+    public function _fakeMethod1()
+    {
+        echo "_fakeMethod1";
+    }
+
+    public function fake_method2()
+    {
+        echo "fake_method2";
+    }
+
+    public function FakeMethod3()
+    {
+        echo "FakeMethod3";
+    }
+
+    public function fakeMETHOD4()
+    {
+        echo "FakeMethod3";
+    }
+
+    public function oneGoodMethod()
+    {
+        echo "oneGoodMethod";
+    }
+}
+
+function fakeFUNCTION()
+{
+    echo "FakeMethod3";
+}

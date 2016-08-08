@@ -1,0 +1,13 @@
+<?php
+
+namespace HexletPsrLinter;
+
+function fakeMethod1()
+{
+    echo "fakeMethod1";
+}
+
+function fakeMethod1($x)
+{
+    echo "fakeMethod1 ".strval($x);
+}

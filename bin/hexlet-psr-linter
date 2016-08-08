@@ -1,15 +1,46 @@
 #!/usr/bin/env php
 <?php
-//First row explanation:
-//"Execute using PHP by looking up the path to the PHP interpreter automatically via env"
-//Example: ./bin/hexlet-psr-linter file.php
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-echo 'what is your name?: ';
-$name = trim(fgets(STDIN));
+use Colors\Color;
 
-$user = new HexletPsrLinter\User($name);
+use function \HexletPsrLinter\lint;
+use function \HexletPsrLinter\buildReport;
+use function \HexletPsrLinter\Utils\formatErrorMessage;
+use function \HexletPsrLinter\Utils\getFilesByPath;
 
-var_dump($user);
-var_dump($name);
+try {
+    $exitCode = 0;
+
+    $cmd = new \Commando\Command();
+    $cmd->doNotTrapErrors();
+    $cmd->argument()
+        ->title('<path>')
+        ->describedAs('A file or folder to lint.')
+        ->require();
+
+    $args = $cmd->getArgumentValues();
+    $path = $args[0];
+
+    $files = getFilesByPath($path);
+    foreach ($files as $file) {
+        echo (new Color(realpath($file)))->white->underline . PHP_EOL;
+        $fileContent = file_get_contents($file);
+        $errors = lint($fileContent);
+        if (!is_null($errors)) {
+            $report = buildReport($errors);
+            echo $report->getOutput() . PHP_EOL;
+        }
+
+        if (is_null($errors) || count($errors) > 0) {
+            $exitCode = 1;
+        }
+    }
+
+    exit($exitCode);
+} catch (Throwable $e) {
+    //echo get_class($e) . PHP_EOL;
+    echo formatErrorMessage($e->getMessage());
+    return 1;
+}
