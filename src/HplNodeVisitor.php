@@ -5,36 +5,49 @@ namespace HexletPsrLinter;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
-define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
-     '__callStatic', '__get', '__set', '__isset', '__unset',
-     '__sleep', '__wakeup', '__toString', '__invoke', '__set_state',
-     '__clone', '__debugInfo', '__autoload', '__soapcall',
-     '__getlastrequest', '__getlastresponse', '__getlastrequestheaders',
-     '__getlastresponseheaders', '__getfunctions', '__gettypes',
-     '__dorequest', '__setcookie', '__setlocation', '__setsoapheaders']);
-
 /**
  * Visitor for PhpParser\NodeTraverser
  */
 class HplNodeVisitor extends NodeVisitorAbstract
 {
     private $errors = [];
+    private $rules;
+
+    public function __construct($rules)
+    {
+        $this->rules = $rules;
+    }
 
     public function leaveNode(Node $node)
     {
-        if (isset($node->name) && !in_array($node->name, MAGIC_METHODS)
-          && $node instanceof Node\FunctionLike
-          && !\PHP_CodeSniffer::isCamelCaps($node->name)) {
-                  $this->errors[] = new HplError(
-                      'error',
-                      $node->getLine(),
-                      $node->name,
-                      get_class($node),
-                      "Method name \"$node->name\" is incorrect. Check PSR-2."
-                  );
-          // $node instanceof Node\Stmt\ClassMethod
-          // $node instanceof Node\Stmt\Function_
+        foreach ($this->rules as $rule) {
+            //print_r($rule);
+            if (is_subclass_of($node, $rule->getStmtType())
+              && !$rule->getMethod()($node)) {
+                $this->errors[] = new HplError(
+                    'error',
+                    $node->getLine(),
+                    $node->name,
+                    get_class($node),
+                    $rule->getMessage()
+                );
+            }
         }
+
+        // if (isset($node->name) && !in_array($node->name, MAGIC_METHODS)
+        //   && $node instanceof Node\FunctionLike
+        //   && !\PHP_CodeSniffer::isCamelCaps($node->name)) {
+        //           //var_dump(is_subclass_of($node, 'PhpParser\Node\FunctionLike'));
+        //           $this->errors[] = new HplError(
+        //               'error',
+        //               $node->getLine(),
+        //               $node->name,
+        //               get_class($node),
+        //               "Method name \"$node->name\" is incorrect. Check PSR-2."
+        //           );
+        //   // $node instanceof Node\Stmt\ClassMethod
+        //   // $node instanceof Node\Stmt\Function_
+        // }
     }
 
     public function getErrors()

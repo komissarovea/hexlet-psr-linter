@@ -10,9 +10,17 @@ use Colors\Color;
 
 function lint($input)
 {
+    $rules = [
+        new HplRule(
+            'PhpParser\Node\FunctionLike',
+            'HexletPsrLinter\checkMethodName',
+            'Method name is incorrect. Check PSR-2.'
+        )
+    ];
+
     $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
     $traverser = new NodeTraverser();
-    $visitor = new HplNodeVisitor();
+    $visitor = new HplNodeVisitor($rules);
     $traverser->addVisitor($visitor);
 
     $stmts = $parser->parse($input);
@@ -35,9 +43,10 @@ function buildReport($errors)
         $output = array_reduce($errors, function ($acc, $error) {
             $line = (new Color("{$error->getLine()}:"))->blue;
             $errorMark = (new Color(sprintf("%-7s", $error->getName())))->red;
+            $statement = "Statement: '{$error->getStmtName()}'.";
             $message = (new Color($error->getMessage()))->white;
             //$acc = implode(PHP_EOL, [$acc, "$line $errorMark $message"]);
-            $acc = "$acc $line $errorMark $message".PHP_EOL;
+            $acc = "$acc $line $errorMark $statement $message".PHP_EOL;
             return $acc;
         }, "");
     }
