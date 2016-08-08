@@ -18,7 +18,11 @@ function checkMethodName($node)
     return true;
 }
 
-function checkFuncDuplicate($node)
+function checkFuncDuplicate($node, array $acc)
 {
-     return \PHP_CodeSniffer::isCamelCaps($node->name);
+    //eval(\Psy\sh());
+    $doubles = array_filter($acc, function ($item) use ($node) {
+        return $item->name === $node->name;
+    });
+    return count($doubles) === 0;
 }

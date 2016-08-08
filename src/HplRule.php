@@ -30,13 +30,13 @@ class HplRule
         return $this->method;
     }
 
-    public function getNeedAcc()
-    {
-        return $this->needAcc;
-    }
-
     public function getMessage()
     {
         return $this->message;
+    }
+
+    public function getNeedAcc()
+    {
+        return $this->needAcc;
     }
 }

@@ -15,6 +15,12 @@ function lint($input)
             'PhpParser\Node\FunctionLike',
             'HexletPsrLinter\checkMethodName',
             'Method name is incorrect. Check PSR-2.'
+        ),
+        new HplRule(
+            'PhpParser\Node\Stmt\Function_',
+            'HexletPsrLinter\checkFuncDuplicate',
+            'Function with such name already exists.',
+            true
         )
     ];
 

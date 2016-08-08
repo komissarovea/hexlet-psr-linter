@@ -3,7 +3,7 @@
 namespace HexletPsrLinter;
 
 /**
- * Code with wrong method names
+ * Code with right method names
  */
 class BadCode
 {
