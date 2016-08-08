@@ -22,6 +22,18 @@ define("BASE_RULES", [
       'function' => 'HexletPsrLinter\checkFuncDuplicate',
       'message' => 'Function with such name already exists.',
       'needAcc' => true
+  ],
+  [
+      'stmtType' => 'PhpParser\Node\Stmt\PropertyProperty',
+      'function' => 'HexletPsrLinter\checkVariableName',
+      'message' => "Property name is incorrect. Use 'camelCase'.",
+      'needAcc' => true
+  ],
+  [
+      'stmtType' => 'PhpParser\Node\Expr\Variable',
+      'function' => 'HexletPsrLinter\checkVariableName',
+      'message' => "Variable name is incorrect. Use 'camelCase'.",
+      'needAcc' => true
   ]
 ]);
 
@@ -40,4 +52,12 @@ function checkFuncDuplicate($node, array $acc)
         return $item->name === $node->name;
     });
     return count($doubles) === 0;
+}
+
+function checkVariableName($node)
+{
+    if (isset($node->name)) {
+        return \PHP_CodeSniffer::isCamelCaps($node->name);
+    }
+    return true;
 }

@@ -26,6 +26,8 @@ class HplNodeVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node)
     {
+        $nodeName = isset($node->name) ? $node->name : 'undefined';
+        //echo get_class($node) . " $nodeName " . PHP_EOL;
         foreach ($this->rules as $rule) {
             $stmtType = $rule['stmtType'];
             if (!array_key_exists($stmtType, $this->acc)) {
@@ -36,7 +38,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
                     $this->errors[] = new HplError(
                         'error',
                         $node->getLine(),
-                        $node->name,
+                        $nodeName,
                         get_class($node),
                         $rule['message']
                     );

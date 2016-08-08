@@ -1,0 +1,14 @@
+<?php
+
+namespace HexletPsrLinter;
+
+/**
+ * Code with right variable names
+ */
+class GoodCode
+{
+    private $someVariable1 = '';
+    static $someStaticVariable2 = '';
+}
+
+$globalVariable3 = '';
