@@ -23,7 +23,7 @@ function lint($input)
     }
     $traverser->traverse($stmts);
     $errors = $visitor->getErrors();
-    return buildReport($errors);
+    return $errors;
 }
 
 function buildReport($errors)

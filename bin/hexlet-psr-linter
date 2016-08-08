@@ -6,6 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Colors\Color;
 
 use function \HexletPsrLinter\lint;
+use function \HexletPsrLinter\buildReport;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\getFilesByPath;
 
@@ -26,7 +27,8 @@ try {
     foreach ($files as $file) {
         echo (new Color(realpath($file)))->white->underline.PHP_EOL;
         $fileContent = file_get_contents($file);
-        $report = lint($fileContent);
+        $errors = lint($fileContent);
+        $report = buildReport($errors);
         echo $report->getOutput();
         if ($report->getErrors() > 0) {
             $exitCode = 1;
