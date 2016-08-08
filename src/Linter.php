@@ -10,23 +10,9 @@ use Colors\Color;
 
 function lint($input)
 {
-    $rules = [
-        new HplRule(
-            'PhpParser\Node\FunctionLike',
-            'HexletPsrLinter\checkMethodName',
-            'Method name is incorrect. Check PSR-2.'
-        ),
-        new HplRule(
-            'PhpParser\Node\Stmt\Function_',
-            'HexletPsrLinter\checkFuncDuplicate',
-            'Function with such name already exists.',
-            true
-        )
-    ];
-
     $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
     $traverser = new NodeTraverser();
-    $visitor = new HplNodeVisitor($rules);
+    $visitor = new HplNodeVisitor(BASE_RULES);
     $traverser->addVisitor($visitor);
 
     $stmts = $parser->parse($input);

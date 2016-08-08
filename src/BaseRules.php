@@ -10,6 +10,21 @@ define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
      '__getlastresponseheaders', '__getfunctions', '__gettypes',
      '__dorequest', '__setcookie', '__setlocation', '__setsoapheaders']);
 
+define("BASE_RULES", [
+  [
+      'stmtType' => 'PhpParser\Node\FunctionLike',
+      'function' => 'HexletPsrLinter\checkMethodName',
+      'message' => 'Method name is incorrect. Check PSR-2.',
+      'needAcc' => false
+  ],
+  [
+      'stmtType' => 'PhpParser\Node\Stmt\Function_',
+      'function' => 'HexletPsrLinter\checkFuncDuplicate',
+      'message' => 'Function with such name already exists.',
+      'needAcc' => true
+  ]
+]);
+
 function checkMethodName($node)
 {
     if (isset($node->name) && !in_array($node->name, MAGIC_METHODS)) {

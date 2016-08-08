@@ -27,22 +27,22 @@ class HplNodeVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node)
     {
         foreach ($this->rules as $rule) {
-            $stmtType = $rule->getStmtType();
+            $stmtType = $rule['stmtType'];
             if (!array_key_exists($stmtType, $this->acc)) {
                 $this->acc[$stmtType] = [];
             }
             if (is_a($node, $stmtType) || is_subclass_of($node, $stmtType)) {
-                if (!$rule->getMethod()($node, $this->acc[$stmtType])) {
+                if (!$rule['function']($node, $this->acc[$stmtType])) {
                     $this->errors[] = new HplError(
                         'error',
                         $node->getLine(),
                         $node->name,
                         get_class($node),
-                        $rule->getMessage()
+                        $rule['message']
                     );
                 }
 
-                if ($rule->getNeedAcc() && !in_array($node, $this->acc[$stmtType])) {
+                if ($rule['needAcc'] && !in_array($node, $this->acc[$stmtType])) {
                     $this->acc[$stmtType][] = $node;
                     //eval(\Psy\sh());
                 }
