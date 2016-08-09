@@ -27,13 +27,13 @@ define("BASE_RULES", [
       'stmtType' => 'PhpParser\Node\Stmt\PropertyProperty',
       'function' => 'HexletPsrLinter\checkVariableName',
       'message' => "Property name is incorrect. Use 'camelCase'.",
-      'needAcc' => true
+      'needAcc' => false
   ],
   [
       'stmtType' => 'PhpParser\Node\Expr\Variable',
       'function' => 'HexletPsrLinter\checkVariableName',
       'message' => "Variable name is incorrect. Use 'camelCase'.",
-      'needAcc' => true
+      'needAcc' => false
   ]
 ]);
 
