@@ -1,0 +1,20 @@
+<?php
+
+namespace HexletPsrLinter;
+
+const ABC = 'abc';
+define("XYZ", "xyz");
+
+/**
+ * Code with class and function declaring
+ */
+class GoodCode
+{
+    private $someVariable1 = '';
+    static $someStaticVariable2 = '';
+}
+
+function someFunction()
+{
+    echo "Hello";
+}

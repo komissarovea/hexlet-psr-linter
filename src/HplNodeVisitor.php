@@ -22,9 +22,10 @@ class HplNodeVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes)
     {
         $this->acc = [];
+        $this->errors = [];
     }
 
-    public function leaveNode(Node $node)
+    public function enterNode(Node $node)
     {
         $nodeName = isset($node->name) ? $node->name : 'undefined';
         //echo get_class($node) . " $nodeName " . PHP_EOL;

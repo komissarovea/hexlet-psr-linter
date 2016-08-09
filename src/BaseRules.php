@@ -10,6 +10,17 @@ define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
      '__getlastresponseheaders', '__getfunctions', '__gettypes',
      '__dorequest', '__setcookie', '__setlocation', '__setsoapheaders']);
 
+define("STMT_TYPES", [
+    'PhpParser\Node\Stmt\Class_',
+    'PhpParser\Node\Stmt\Function_',
+    'PhpParser\Node\Stmt\Const_',
+    'PhpParser\Node\Const_']);
+
+define("EXPR_TYPES", [
+    'PhpParser\Node\Expr\Variable',
+    'PhpParser\Node\Expr\FuncCall',
+    'PhpParser\Node\Stmt\Echo_']);
+
 define("BASE_RULES", [
   [
       'stmtType' => 'PhpParser\Node\FunctionLike',
@@ -34,6 +45,12 @@ define("BASE_RULES", [
       'function' => 'HexletPsrLinter\checkVariableName',
       'message' => "Variable name is incorrect. Use 'camelCase'.",
       'needAcc' => false
+  ],
+  [
+      'stmtType' => 'PhpParser\Node',
+      'function' => 'HexletPsrLinter\checkSideEffects',
+      'message' => "A file should declare new symbols or execute logic with side effects, but should not do both.",
+      'needAcc' => true
   ]
 ]);
 
@@ -60,4 +77,37 @@ function checkVariableName($node)
         return \PHP_CodeSniffer::isCamelCaps($node->name);
     }
     return true;
+}
+
+function checkSideEffects($node, array $acc)
+{
+    $nodeClass = get_class($node);
+    if (in_array($nodeClass, STMT_TYPES)
+      || (in_array($nodeClass, EXPR_TYPES) && null === getParent($node, $acc))) {
+        //$nodeName = isset($node->name) ? $node->name : 'undefined';
+        //echo $nodeClass . " $nodeName " . PHP_EOL;
+        $conflictItems = array_filter($acc, function ($item) use ($nodeClass, $acc) {
+            $itemClass = get_class($item);
+            if (in_array($nodeClass, EXPR_TYPES)) {
+                return in_array($itemClass, STMT_TYPES);
+            }
+            if (in_array($nodeClass, STMT_TYPES)) {
+                return in_array($itemClass, EXPR_TYPES) && null === getParent($item, $acc);
+            }
+            return false;
+        });
+
+        return count($conflictItems) === 0;
+    }
+    return true;
+}
+
+function getParent($node, array $acc)
+{
+    foreach ($acc as $item) {
+        if (isset($item->stmts) && in_array($node, $item->stmts)) {
+            return $item;
+        }
+    }
+    return null;
 }

@@ -8,10 +8,11 @@ namespace HexletPsrLinter;
 class BadCode
 {
     private $someVariable1 = '';
-    static  $some_variable2 = '';
+    public static  $some_variable2 = '';
     private $SomeVariable3 = '';
     private $someVARIABLE4 = '';
     private $_someVariable5 = '';
 }
 
-$globalVARIABLE = '';
+$globalVARIABLE1 = '';
+$globalVariable2 = '';
