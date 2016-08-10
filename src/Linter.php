@@ -14,7 +14,8 @@ function lint($input)
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
-        $visitor = new HplNodeVisitor(BASE_RULES);
+        $rules = loadRules();
+        $visitor = new HplNodeVisitor($rules);
         $traverser->addVisitor($visitor);
 
         $stmts = $parser->parse($input);

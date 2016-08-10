@@ -21,11 +21,12 @@
     "autoload": {
       "files": [
           "src/Linter.php",
-          "src/BaseRules.php",
+          "src/Rules/RulesFunctions.php",
+          "src/Rules/RulesLoader.php",
           "src/Utils.php"
       ],
       "psr-4": {
-        "HexletPsrLinter\\": "src/"
+        "HexletPsrLinter\\": ["src/"]
       }
     }
 }
