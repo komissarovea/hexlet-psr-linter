@@ -11,6 +11,7 @@ use Colors\Color;
 function lint($input, $autoFix = false)
 {
     $errors = [];
+    $fixedCode = $input;
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
@@ -22,13 +23,18 @@ function lint($input, $autoFix = false)
         if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
             $errors[] = new HplError('error', -1, 'global', null, 'PHP statements were not found.');
         } else {
-            $traverser->traverse($stmts);
+            $stmts = $traverser->traverse($stmts);
             $errors = $visitor->getErrors();
+            if ($autoFix) {
+                $prettyPrinter = new PrettyPrinter\Standard;
+                // pretty print
+                $fixedCode = $prettyPrinter->prettyPrintFile($stmts);
+            }
         }
     } catch (\Throwable $e) {
         $errors[] = new HplError('error', -1, 'global', null, $e->getMessage());
     }
-    return $errors;
+    return ['errors' => $errors, 'fixedCode' => $fixedCode];
 }
 
 function buildReport($errors)

@@ -28,11 +28,11 @@ try {
     foreach ($files as $file) {
         echo (new Color(realpath($file)))->white->underline . PHP_EOL;
         $fileContent = file_get_contents($file);
-        $errors = lint($fileContent);
-        if (!is_null($errors)) {
-            $report = buildReport($errors);
-            echo $report->getOutput() . PHP_EOL;
-        }
+        $result = lint($fileContent);
+
+        $errors = $result['errors'];
+        $report = buildReport($errors);
+        echo $report->getOutput() . PHP_EOL;
 
         if (is_null($errors) || count($errors) > 0) {
             $exitCode = 1;
