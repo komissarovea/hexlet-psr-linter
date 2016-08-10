@@ -46,22 +46,20 @@ function checkVariableName($node)
     return true;
 }
 
-function checkSideEffects($node, array $acc)
+function checkSideEffects($node, array $acc, $lastEndLine)
 {
-    $nodeClass = get_class($node);
-    if (in_array($nodeClass, STMT_TYPES)
-      || (in_array($nodeClass, EXPR_TYPES) && null === getParent($node, $acc))) {
-        //$nodeName = isset($node->name) ? $node->name : 'undefined';
-        //echo $nodeClass . " $nodeName " . PHP_EOL;
-        $conflictItems = array_filter($acc, function ($item) use ($nodeClass, $acc) {
-            $itemClass = get_class($item);
-            if (in_array($nodeClass, EXPR_TYPES)) {
-                return in_array($itemClass, STMT_TYPES);
+    if (isStatement($node) || isRootExpression($node, $lastEndLine)) {
+        // $nodeName = isset($node->name) ? $node->name : 'undefined';
+        // echo get_class($node) . " $nodeName " . PHP_EOL;
+        $internalEndLine = 0;
+        $conflictItems = array_filter($acc, function ($item) use ($node, &$internalEndLine) {
+            $result = isStatement($node) ? isRootExpression($item, $internalEndLine)
+              : isStatement($item);
+            $itemEndLine = $item->getAttribute('endLine');
+            if ($itemEndLine > $internalEndLine) {
+                $internalEndLine = $itemEndLine;
             }
-            if (in_array($nodeClass, STMT_TYPES)) {
-                return in_array($itemClass, EXPR_TYPES) && null === getParent($item, $acc);
-            }
-            return false;
+            return $result;
         });
 
         return count($conflictItems) === 0;
@@ -69,10 +67,34 @@ function checkSideEffects($node, array $acc)
     return true;
 }
 
+function isStatement($node)
+{
+    $nodeClass = get_class($node);
+    return in_array($nodeClass, STMT_TYPES)
+      || (isset($node->name) && $node->name == 'define');
+}
+
+function isRootExpression($node, $lastEndLine = 0)
+{
+    $nodeClass = get_class($node);
+    return in_array($nodeClass, EXPR_TYPES) && !hasParent($node, $lastEndLine)
+      && !(isset($node->name) && $node->name == 'define');
+}
+
+function hasParent($node, $lastEndLine)
+{
+    $nodeEndLine = $node->getAttribute('endLine');
+    //eval(\Psy\sh());
+    return $nodeEndLine < $lastEndLine;
+}
+
+// Not fully implemented
 function getParent($node, array $acc)
 {
+    //eval(\Psy\sh());
     foreach ($acc as $item) {
-        if (isset($item->stmts) && in_array($node, $item->stmts)) {
+        if ((isset($item->stmts) && in_array($node, $item->stmts))
+            || (isset($item->exprs) && in_array($node, $item->exprs))) {
             return $item;
         }
     }

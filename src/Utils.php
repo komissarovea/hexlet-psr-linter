@@ -4,10 +4,10 @@ namespace HexletPsrLinter\Utils;
 
 use Colors\Color;
 
-function formatErrorMessage($message, $addEOL = true)
+function formatErrorMessage($message, $addEol = true)
 {
     $result = (new Color("ERROR: ".$message))->red;
-    if ($addEOL) {
+    if ($addEol) {
         $result .= PHP_EOL;
     }
     return $result;

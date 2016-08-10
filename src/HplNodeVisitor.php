@@ -10,9 +10,11 @@ use PhpParser\NodeVisitorAbstract;
  */
 class HplNodeVisitor extends NodeVisitorAbstract
 {
-    private $errors = [];
-    private $acc;
     private $rules;
+
+    private $acc;
+    private $errors;
+    private $lastEndLine;
 
     public function __construct(array $rules)
     {
@@ -23,6 +25,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
     {
         $this->acc = [];
         $this->errors = [];
+        $this->lastEndLine = 0;
     }
 
     public function enterNode(Node $node)
@@ -35,7 +38,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
                 $this->acc[$stmtType] = [];
             }
             if (is_a($node, $stmtType) || is_subclass_of($node, $stmtType)) {
-                if (!$rule['function']($node, $this->acc[$stmtType])) {
+                if (!$rule['function']($node, $this->acc[$stmtType], $this->lastEndLine)) {
                     $this->errors[] = new HplError(
                         'error',
                         $node->getLine(),
@@ -50,6 +53,10 @@ class HplNodeVisitor extends NodeVisitorAbstract
                     //eval(\Psy\sh());
                 }
             }
+        }
+        $nodeEndLine = $node->getAttribute('endLine');
+        if ($nodeEndLine > $this->lastEndLine) {
+            $this->lastEndLine = $nodeEndLine;
         }
     }
 

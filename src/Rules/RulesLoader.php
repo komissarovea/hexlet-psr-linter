@@ -39,3 +39,8 @@ function loadRules()
 {
     return BASE_RULES;
 }
+
+function fakeMethod1($x)
+{
+    echo "fakeMethod1" . strval($x);
+}
