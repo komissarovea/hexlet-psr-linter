@@ -11,14 +11,16 @@ use PhpParser\NodeVisitorAbstract;
 class HplNodeVisitor extends NodeVisitorAbstract
 {
     private $rules;
+    private $autoFix;
 
     private $acc;
     private $errors;
     private $lastEndLine;
 
-    public function __construct(array $rules)
+    public function __construct(array $rules, $autoFix = false)
     {
         $this->rules = $rules;
+        $this->autoFix = $autoFix;
     }
 
     public function beforeTraverse(array $nodes)
@@ -38,13 +40,14 @@ class HplNodeVisitor extends NodeVisitorAbstract
                 $this->acc[$stmtType] = [];
             }
             if (is_a($node, $stmtType) || is_subclass_of($node, $stmtType)) {
-                if (!$rule['function']($node, $this->acc[$stmtType], $this->lastEndLine)) {
+                if (!$rule['function']($node, $this->acc[$stmtType], $this->lastEndLine, $this->autoFix)) {
                     $this->errors[] = new HplError(
-                        'error',
+                        $rule['fixable'] && $this->autoFix ? 'fixed' : 'error',
                         $node->getLine(),
                         $nodeName,
                         get_class($node),
-                        $rule['message']
+                        $rule['message'],
+                        $rule['fixable'] && $this->autoFix
                     );
                 }
 

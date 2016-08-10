@@ -12,14 +12,16 @@ class HplError
     private $stmtName;
     private $stmtType;
     private $message;
+    private $fixed;
 
-    public function __construct($name, $line, $stmtName, $stmtType, $message)
+    public function __construct($name, $line, $stmtName, $stmtType, $message, $fixed = false)
     {
         $this->name = $name;
         $this->line = $line;
         $this->stmtName = $stmtName;
         $this->stmtType = $stmtType;
         $this->message = $message;
+        $this->fixed = $fixed;
     }
 
     public function getName()
@@ -45,5 +47,10 @@ class HplError
     public function getMessage()
     {
         return $this->message;
+    }
+
+    public function isFixed()
+    {
+        return $this->fixed;
     }
 }

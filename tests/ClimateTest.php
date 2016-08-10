@@ -13,12 +13,14 @@ class ClimateTest extends \PHPUnit\Framework\TestCase
         $stmtName = 'someMethod1';
         $stmtType = 'PhpParser\Node\FunctionLike';
         $message = 'Method name is incorrect. Check PSR-2.';
-        $error = new HplError($name, $line, $stmtName, $stmtType, $message);
+        $fixed = true;
+        $error = new HplError($name, $line, $stmtName, $stmtType, $message, $fixed);
         $this->assertEquals($name, $error->getName());
         $this->assertEquals($line, $error->getLine());
         $this->assertEquals($stmtName, $error->getStmtName());
         $this->assertEquals($stmtType, $error->getStmtType());
         $this->assertEquals($message, $error->getMessage());
+        $this->assertEquals($fixed, $error->isFixed());
     }
 
     public function testHplReport()

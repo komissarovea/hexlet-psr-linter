@@ -8,14 +8,14 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use Colors\Color;
 
-function lint($input)
+function lint($input, $autoFix = false)
 {
     $errors = [];
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
         $rules = loadRules();
-        $visitor = new HplNodeVisitor($rules);
+        $visitor = new HplNodeVisitor($rules, $autoFix);
         $traverser->addVisitor($visitor);
 
         $stmts = $parser->parse($input);
@@ -41,7 +41,8 @@ function buildReport($errors)
     if ($errorsCount > 0) {
         $output = array_reduce($errors, function ($acc, $error) {
             $line = (new Color("{$error->getLine()}:"))->blue;
-            $errorMark = (new Color(sprintf("%-7s", $error->getName())))->red;
+            $errorMark = sprintf("%-7s", $error->getName());
+            $errorMark = $error->isFixed() ? (new Color($errorMark))->green : (new Color($errorMark))->red;
             $statement = "Statement: '{$error->getStmtName()}'.";
             $message = (new Color($error->getMessage()))->white;
             //$acc = implode(PHP_EOL, [$acc, "$line $errorMark $message"]);
