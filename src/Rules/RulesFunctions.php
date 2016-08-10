@@ -2,6 +2,8 @@
 
 namespace HexletPsrLinter;
 
+use function \HexletPsrLinter\Utils\strToCamelCase;
+
 const MAGIC_METHODS = ['__construct', '__destruct', '__call',
      '__callStatic', '__get', '__set', '__isset', '__unset',
      '__sleep', '__wakeup', '__toString', '__invoke', '__set_state',
@@ -44,7 +46,7 @@ function checkVariableName($node, array $acc, $lastEndLine, $autoFix)
     if (isset($node->name)) {
         $result = \PHP_CodeSniffer::isCamelCaps($node->name);
         if (!$result && $autoFix) {
-            $node->name = strtolower($node->name);
+            $node->name = strToCamelCase($node->name);
         }
     }
     return $result;

@@ -11,7 +11,7 @@ use Colors\Color;
 function lint($input, $autoFix = false)
 {
     $errors = [];
-    $fixedCode = $input;
+    $fixedCode = null;
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();

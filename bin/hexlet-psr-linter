@@ -21,14 +21,27 @@ try {
         ->describedAs('A file or folder to lint.')
         ->require();
 
+    $cmd->flag('f')
+        ->aka('fix')
+        ->describedAs('Fix errors if it is possible.')
+        ->boolean();
+
     $args = $cmd->getArgumentValues();
     $path = $args[0];
+
+    $flags = $cmd->getFlagValues();
+    $autoFix = $flags['f'];
 
     $files = getFilesByPath($path);
     foreach ($files as $file) {
         echo (new Color(realpath($file)))->white->underline . PHP_EOL;
         $fileContent = file_get_contents($file);
-        $result = lint($fileContent);
+        $result = lint($fileContent, $autoFix);
+
+        if ($autoFix) {
+            $fixedCode = $result['fixedCode'];
+            file_put_contents($file, $fixedCode);
+        }
 
         $errors = $result['errors'];
         $report = buildReport($errors);

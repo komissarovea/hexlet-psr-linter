@@ -32,3 +32,12 @@ function getFilesByPath($path)
         throw new \HexletPsrLinter\Exceptions\FileException("'$path' is not readable!");
     }
 }
+
+function strToCamelCase($str)
+{
+    $str = preg_replace('/([a-z])([A-Z])/', "\\1 \\2", $str);
+    $str = str_replace('_', ' ', $str);
+    $str = str_replace(' ', '', ucwords(strtolower($str)));
+    $str = lcfirst($str);
+    return $str;
+}
