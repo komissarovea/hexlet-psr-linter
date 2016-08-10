@@ -2,24 +2,24 @@
 
 namespace HexletPsrLinter;
 
-define("MAGIC_METHODS", ['__construct', '__destruct', '__call',
+const MAGIC_METHODS = ['__construct', '__destruct', '__call',
      '__callStatic', '__get', '__set', '__isset', '__unset',
      '__sleep', '__wakeup', '__toString', '__invoke', '__set_state',
      '__clone', '__debugInfo', '__autoload', '__soapcall',
      '__getlastrequest', '__getlastresponse', '__getlastrequestheaders',
      '__getlastresponseheaders', '__getfunctions', '__gettypes',
-     '__dorequest', '__setcookie', '__setlocation', '__setsoapheaders']);
+     '__dorequest', '__setcookie', '__setlocation', '__setsoapheaders'];
 
-define("STMT_TYPES", [
+const STMT_TYPES = [
     'PhpParser\Node\Stmt\Class_',
     'PhpParser\Node\Stmt\Function_',
     'PhpParser\Node\Stmt\Const_',
-    'PhpParser\Node\Const_']);
+    'PhpParser\Node\Const_'];
 
-define("EXPR_TYPES", [
-    'PhpParser\Node\Expr\Variable',
-    'PhpParser\Node\Expr\FuncCall',
-    'PhpParser\Node\Stmt\Echo_']);
+const EXPR_TYPES = [
+        'PhpParser\Node\Expr\Variable',
+        'PhpParser\Node\Expr\FuncCall',
+        'PhpParser\Node\Stmt\Echo_'];
 
 function checkMethodName($node)
 {

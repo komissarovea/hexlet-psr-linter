@@ -2,7 +2,7 @@
 
 namespace HexletPsrLinter;
 
-define("BASE_RULES", [
+const BASE_RULES = [
   [
       'stmtType' => 'PhpParser\Node\FunctionLike',
       'function' => 'HexletPsrLinter\checkMethodName',
@@ -33,7 +33,7 @@ define("BASE_RULES", [
       'message' => "A file should declare new symbols or execute logic with side effects, but should not do both.",
       'needAcc' => true
   ]
-]);
+];
 
 function loadRules()
 {
