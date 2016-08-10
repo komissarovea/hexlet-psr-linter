@@ -1,0 +1,18 @@
+<?php
+
+namespace HexletPsrLinter;
+
+/**
+ * Code with wrong variable names
+ */
+class BadCode
+{
+    private $someVariable1 = '';
+    public static  $some_variable2 = '';
+    private $SomeVariable3 = '';
+    private $someVARIABLE4 = '';
+    private $_someVariable5 = '';
+}
+
+$globalVARIABLE1 = '';
+$globalVariable2 = '';

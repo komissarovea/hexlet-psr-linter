@@ -1,0 +1,24 @@
+<?php
+
+function fakeFunction()
+{
+    $localVariable;
+}
+
+function fakeFunction2()
+{
+    $localVariable2;
+}
+
+class BadCode
+{
+    public function __construct($argument)
+    {
+        $localVariable3;
+        print_r("1");
+    }
+}
+
+$globalVariable;
+print_r("2");
+echo "2";

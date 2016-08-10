@@ -10,6 +10,7 @@ use function \HexletPsrLinter\buildReport;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\getFilesByPath;
 
+//echo getcwd() . PHP_EOL;
 try {
     $exitCode = 0;
 

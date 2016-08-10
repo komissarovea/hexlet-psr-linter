@@ -29,7 +29,7 @@ class BadCode
 
     public function fakeMETHOD4()
     {
-        echo "FakeMethod3";
+        echo "fakeMETHOD4";
     }
 
     public function oneGoodMethod()
@@ -40,5 +40,5 @@ class BadCode
 
 function fakeFUNCTION()
 {
-    echo "FakeMethod3";
+    echo "fakeFUNCTION";
 }

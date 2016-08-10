@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Execute logic with side effects
+ */
+ 
+ $globalVariable = 'Hello';
+ echo "Hello1";
+ print_r("Hello2");

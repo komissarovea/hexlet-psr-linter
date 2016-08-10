@@ -10,9 +10,11 @@ use PhpParser\NodeVisitorAbstract;
  */
 class HplNodeVisitor extends NodeVisitorAbstract
 {
-    private $errors = [];
-    private $acc;
     private $rules;
+
+    private $acc;
+    private $errors;
+    private $lastEndLine;
 
     public function __construct(array $rules)
     {
@@ -22,21 +24,25 @@ class HplNodeVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes)
     {
         $this->acc = [];
+        $this->errors = [];
+        $this->lastEndLine = 0;
     }
 
-    public function leaveNode(Node $node)
+    public function enterNode(Node $node)
     {
+        $nodeName = isset($node->name) ? $node->name : 'undefined';
+        //echo get_class($node) . " $nodeName " . PHP_EOL;
         foreach ($this->rules as $rule) {
             $stmtType = $rule['stmtType'];
             if (!array_key_exists($stmtType, $this->acc)) {
                 $this->acc[$stmtType] = [];
             }
             if (is_a($node, $stmtType) || is_subclass_of($node, $stmtType)) {
-                if (!$rule['function']($node, $this->acc[$stmtType])) {
+                if (!$rule['function']($node, $this->acc[$stmtType], $this->lastEndLine)) {
                     $this->errors[] = new HplError(
                         'error',
                         $node->getLine(),
-                        $node->name,
+                        $nodeName,
                         get_class($node),
                         $rule['message']
                     );
@@ -47,6 +53,10 @@ class HplNodeVisitor extends NodeVisitorAbstract
                     //eval(\Psy\sh());
                 }
             }
+        }
+        $nodeEndLine = $node->getAttribute('endLine');
+        if ($nodeEndLine > $this->lastEndLine) {
+            $this->lastEndLine = $nodeEndLine;
         }
     }
 

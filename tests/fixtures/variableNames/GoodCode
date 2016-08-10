@@ -1,0 +1,12 @@
+<?php
+
+namespace HexletPsrLinter;
+
+/**
+ * Code with right variable names
+ */
+class GoodCode
+{
+    private $someVariable1 = '';
+    public static $someStaticVariable2 = '';
+}

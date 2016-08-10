@@ -1,0 +1,14 @@
+<?php
+
+namespace HexletPsrLinter;
+
+/**
+ * Code with invalid variable names
+ */
+class InvalidCode
+{
+    private $someVariable1 = '';
+    private $1someVariable2 = '';
+}
+
+$globalVARIABLE = '';

@@ -5,7 +5,7 @@ namespace HexletPsrLinter;
 /**
  * Code with right method names
  */
-class BadCode
+class GoodCode
 {
     public function __construct($argument)
     {
@@ -19,7 +19,7 @@ class BadCode
 
     public function fakeMethod2($x)
     {
-        echo "fakeMethod2 ".strval($x);
+        echo "fakeMethod2";
     }
 
     public function __destruct()
