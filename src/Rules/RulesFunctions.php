@@ -70,15 +70,15 @@ function checkSideEffects($node, array $acc, $lastEndLine)
 function isStatement($node)
 {
     $nodeClass = get_class($node);
-    return in_array($nodeClass, STMT_TYPES)
-      || (isset($node->name) && $node->name == 'define');
+    return in_array($nodeClass, STMT_TYPES);
+      //|| (isset($node->name) && $node->name == 'define');
 }
 
 function isRootExpression($node, $lastEndLine = 0)
 {
     $nodeClass = get_class($node);
-    return in_array($nodeClass, EXPR_TYPES) && !hasParent($node, $lastEndLine)
-      && !(isset($node->name) && $node->name == 'define');
+    return in_array($nodeClass, EXPR_TYPES) && !hasParent($node, $lastEndLine);
+      //&& !(isset($node->name) && $node->name == 'define');
 }
 
 function hasParent($node, $lastEndLine)
