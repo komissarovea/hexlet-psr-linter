@@ -6,8 +6,9 @@ install:
   - composer self-update
   - make install
 
-script: make lint test
+script:
+  - make lint test
+  - bin/hexlet-psr-linter src
 
 after_script:
   - vendor/bin/test-reporter
-  - /bin/hexlet-psr-linter src
