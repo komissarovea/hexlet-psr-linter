@@ -10,3 +10,4 @@ script: make lint test
 
 after_script:
   - vendor/bin/test-reporter
+  - /bin/hexlet-psr-linter src
