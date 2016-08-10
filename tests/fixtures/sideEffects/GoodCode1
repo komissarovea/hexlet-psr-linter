@@ -3,7 +3,6 @@
 namespace HexletPsrLinter;
 
 const ABC = 'abc';
-define("XYZ", "xyz");
 
 /**
  * Code with class and function declaring
