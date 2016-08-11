@@ -45,7 +45,6 @@ try {
             file_put_contents($file, $fixedCode);
         }
 
-
         $report = buildReport($errors);
         echo $report->getOutput() . PHP_EOL;
 

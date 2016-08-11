@@ -12,7 +12,6 @@ function lint($input)
 {
     $result = [];
     $errors = [];
-    $fixedCode = null;
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();

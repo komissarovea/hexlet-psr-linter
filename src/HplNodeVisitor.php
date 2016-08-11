@@ -30,7 +30,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node)
     {
-        $nodeName = isset($node->name) ? $node->name : 'undefined';
+        //$nodeName = isset($node->name) ? $node->name : 'undefined';
         //echo get_class($node) . " $nodeName " . PHP_EOL;
         foreach ($this->rules as $rule) {
             $stmtType = $rule['stmtType'];
