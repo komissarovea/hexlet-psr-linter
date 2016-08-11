@@ -3,6 +3,7 @@
 namespace HexletPsrLinter;
 
 use function \HexletPsrLinter\Utils\getFilesByPath;
+use function \HexletPsrLinter\loadRules;
 
 class FileTest extends \PHPUnit\Framework\TestCase
 {
@@ -29,5 +30,11 @@ class FileTest extends \PHPUnit\Framework\TestCase
     {
         $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'methodNames']);
         $this->assertEquals(2, count(getFilesByPath($path)));
+    }
+
+    public function testLoadRules()
+    {
+        $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'testRules.json']);
+        $this->assertEquals(7, count(loadRules($path)));
     }
 }

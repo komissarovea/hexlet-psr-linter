@@ -1,0 +1,20 @@
+{
+  "methodName2": {
+    "stmtType": "PhpParser\\Node\\FunctionLike",
+    "function": "HexletPsrLinter\\checkMethodName",
+    "message": "Method name is incorrect. Check PSR-2.",
+    "needAcc": false
+  },
+  "funcDuplicate2": {
+    "stmtType": "PhpParser\\Node\\Stmt\\Function_",
+    "function": "HexletPsrLinter\\checkFuncDuplicate",
+    "message": "Function with such name already exists.",
+    "needAcc": true
+  },
+  "sideEffects": {
+    "stmtType": "PhpParser\\Node",
+    "function": "HexletPsrLinter\\checkSideEffects",
+    "message": "A file should declare new symbols or execute logic with side effects, but should not do both.",
+    "needAcc": true
+  }
+}

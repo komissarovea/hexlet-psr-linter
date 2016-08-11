@@ -10,6 +10,7 @@ use function \HexletPsrLinter\fix;
 use function \HexletPsrLinter\buildReport;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\getFilesByPath;
+use function \HexletPsrLinter\loadRules;
 
 //echo getcwd() . PHP_EOL;
 try {
@@ -17,17 +18,10 @@ try {
 
     $cmd = new \Commando\Command();
     $cmd->doNotTrapErrors();
-    $cmd->argument()
-        ->title('<path>')
-        ->describedAs('A file or folder to lint.')
-        ->require();
-    $cmd->flag('f')
-        ->aka('fix')
-        ->describedAs('Fix errors if it is possible.')
-        ->boolean();
-    $cmd->option('r')
-        ->aka('format')
-        ->describedAs('When set, use this format for report. Valid values: text, json, yml.')
+    $cmd->argument()->title('<path>')->describedAs('A file or folder to lint.')->require();
+    $cmd->flag('f')->aka('fix')->describedAs('Fix errors if it is possible.')->boolean();
+    $cmd->flag('r')->aka('rules')->describedAs('A file or folder with lint rules. See baseRules.json as sample.');
+    $cmd->option('m')->aka('format')->describedAs('When set, use this format for report. Values: text, json, yml.')
         ->must(function ($format) {
             $formats = array('text', 'json', 'yml');
             return in_array($format, $formats);
@@ -38,13 +32,15 @@ try {
 
     $flags = $cmd->getFlagValues();
     $autoFix = $flags['f'];
-    $format = $flags['r'];
+    $format = $flags['m'];
+    $rulesPath = $flags['r'];
 
     $files = getFilesByPath($path);
+    $rules = loadRules($rulesPath);
     foreach ($files as $file) {
         echo (new Color(realpath($file)))->white->underline . PHP_EOL;
         $fileContent = file_get_contents($file);
-        $result = lint($fileContent);
+        $result = lint($fileContent, $rules);
         $errors = $result['errors'];
 
         if ($autoFix && isset($result['allStatements'])) {
@@ -55,7 +51,7 @@ try {
         $report = buildReport($errors, $format);
         echo $report . PHP_EOL;
 
-        if (is_null($errors) || count($errors) > 0) {
+        if (count($errors) > 0) {
             $exitCode = 1;
         }
     }

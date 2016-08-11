@@ -19,7 +19,7 @@ class FixTest extends \PHPUnit\Framework\TestCase
     public function testVariableNamesWithFix()
     {
         $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'variableNames', 'BadCode']);
-        $result = lint(file_get_contents($path), true);
+        $result = lint(file_get_contents($path));
 
         $this->assertEquals(7, count($result['errors']));
         $this->assertArrayHasKey('allStatements', $result);

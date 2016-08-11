@@ -9,14 +9,13 @@ use PhpParser\PrettyPrinter;
 use Colors\Color;
 use Symfony\Component\Yaml\Yaml;
 
-function lint($input)
+function lint($input, $rules = BASE_RULES)
 {
     $result = [];
     $errors = [];
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
-        $rules = loadRules();
         $visitor = new HplNodeVisitor($rules);
         $traverser->addVisitor($visitor);
 
@@ -49,12 +48,18 @@ function fix(array $errors, array $allStatements)
     return $fixedCode;
 }
 
-function buildReport($errors, $format = 'text')
+function buildReport($errors, $format)
 {
     $report = "";
     $dict = convertErrorsToDictionary($errors);
     switch ($format) {
-        case 'text':
+        case 'json':
+            $report = json_encode($dict);
+            break;
+        case 'yml':
+            $report = Yaml::dump($dict);
+            break;
+        default:
             $report = array_reduce($dict['errors'], function ($acc, $error) {
                 $line = (new Color("$error[line]:"))->blue;
                 $name = sprintf("%-7s", $error['name']);
@@ -67,12 +72,6 @@ function buildReport($errors, $format = 'text')
             $footer = "Total errors: $dict[totalErrors]" . PHP_EOL;
             $footer = $dict['totalErrors'] > 0 ? (new Color($footer))->red : (new Color($footer))->green;
             $report = "$report $footer";
-            break;
-        case 'json':
-            $report = json_encode($dict);
-            break;
-        case 'yml':
-            $report = Yaml::dump($dict);
             break;
     }
     return $report;
