@@ -7,8 +7,7 @@ install:
   - make install
 
 script:
-  - make lint test
-  - bin/hexlet-psr-linter src
+  - make lint test lintself
 
 after_script:
   - vendor/bin/test-reporter
