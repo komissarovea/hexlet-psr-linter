@@ -10,7 +10,9 @@
     "bin": ["bin/hexlet-psr-linter"],
     "require": {
       "nikic/php-parser": "*",
-      "nategood/commando": "*"
+      "nategood/commando": "*",
+      "kevinlebrun/colors.php": "0.*",
+      "symfony/yaml" : "*"
     },
     "require-dev": {
       "phpunit/phpunit": "*",

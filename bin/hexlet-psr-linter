@@ -21,17 +21,24 @@ try {
         ->title('<path>')
         ->describedAs('A file or folder to lint.')
         ->require();
-
     $cmd->flag('f')
         ->aka('fix')
         ->describedAs('Fix errors if it is possible.')
         ->boolean();
+    $cmd->option('r')
+        ->aka('format')
+        ->describedAs('When set, use this format for report. Valid values: text, json, yml.')
+        ->must(function ($format) {
+            $formats = array('text', 'json', 'yml');
+            return in_array($format, $formats);
+        });
 
     $args = $cmd->getArgumentValues();
     $path = $args[0];
 
     $flags = $cmd->getFlagValues();
     $autoFix = $flags['f'];
+    $format = $flags['r'];
 
     $files = getFilesByPath($path);
     foreach ($files as $file) {
@@ -45,8 +52,8 @@ try {
             file_put_contents($file, $fixedCode);
         }
 
-        $report = buildReport($errors);
-        echo $report->getOutput() . PHP_EOL;
+        $report = buildReport($errors, $format);
+        echo $report . PHP_EOL;
 
         if (is_null($errors) || count($errors) > 0) {
             $exitCode = 1;
@@ -55,7 +62,13 @@ try {
 
     exit($exitCode);
 } catch (Throwable $e) {
-    //echo get_class($e) . PHP_EOL;
-    echo formatErrorMessage($e->getMessage());
+    echo get_class($e) . PHP_EOL;
+    $message = $e->getMessage();
+    if (strpos($message, 'Required argument') !== false
+        || strpos($message, 'Unknown option') !== false
+        || strpos($message, 'for option r') !== false) {
+        $cmd->printHelp();
+    }
+    echo formatErrorMessage($message);
     return 1;
 }
