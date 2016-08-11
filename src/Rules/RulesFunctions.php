@@ -40,16 +40,22 @@ function checkFuncDuplicate($node, array $acc)
     return count($doubles) === 0;
 }
 
-function checkVariableName($node, array $acc, $lastEndLine, $autoFix)
+function checkVariableName($node)
 {
     $result = true;
     if (isset($node->name)) {
         $result = \PHP_CodeSniffer::isCamelCaps($node->name);
-        if (!$result && $autoFix) {
-            $node->name = strToCamelCase($node->name);
-        }
     }
     return $result;
+}
+
+function fixVariableName($node)
+{
+    if (isset($node->name)) {
+        $node->name = strToCamelCase($node->name);
+        return true;
+    }
+    return false;
 }
 
 function checkSideEffects($node, array $acc, $lastEndLine)

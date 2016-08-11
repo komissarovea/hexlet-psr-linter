@@ -29,7 +29,7 @@ class LinterTest extends \PHPUnit\Framework\TestCase
         $result = lint(file_get_contents($path));
         $errors = $result['errors'];
         $this->assertEquals(1, count($errors));
-        $this->assertEquals('global', $errors[0]->getStmtName());
+        $this->assertEquals('undefined', $errors[0]->getStmtName());
     }
 
     public function testFunctionDuplicates()
@@ -60,7 +60,7 @@ class LinterTest extends \PHPUnit\Framework\TestCase
         $result = lint(file_get_contents($path));
         $errors = $result['errors'];
         $this->assertEquals(1, count($errors));
-        $this->assertEquals('global', $errors[0]->getStmtName());
+        $this->assertEquals('undefined', $errors[0]->getStmtName());
     }
 
     public function testNotPhpFile()
@@ -69,6 +69,6 @@ class LinterTest extends \PHPUnit\Framework\TestCase
         $result = lint(file_get_contents($path));
         $errors = $result['errors'];
         $this->assertEquals(1, count($errors));
-        $this->assertEquals('global', $errors[0]->getStmtName());
+        $this->assertEquals('undefined', $errors[0]->getStmtName());
     }
 }

@@ -8,33 +8,45 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use Colors\Color;
 
-function lint($input, $autoFix = false)
+function lint($input)
 {
+    $result = [];
     $errors = [];
     $fixedCode = null;
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
         $rules = loadRules();
-        $visitor = new HplNodeVisitor($rules, $autoFix);
+        $visitor = new HplNodeVisitor($rules);
         $traverser->addVisitor($visitor);
 
         $stmts = $parser->parse($input);
         if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
-            $errors[] = new HplError('error', -1, 'global', null, 'PHP statements were not found.');
+            $errors[] = new HplError(null, ['message' => 'PHP statements were not found.']);
         } else {
             $stmts = $traverser->traverse($stmts);
             $errors = $visitor->getErrors();
-            if ($autoFix) {
-                $prettyPrinter = new PrettyPrinter\Standard;
-                // pretty print
-                $fixedCode = $prettyPrinter->prettyPrintFile($stmts);
-            }
+            $result['allStatements'] = $stmts;
         }
     } catch (\Throwable $e) {
-        $errors[] = new HplError('error', -1, 'global', null, $e->getMessage());
+        $errors[] = new HplError(null, ['message' => $e->getMessage()]);
     }
-    return ['errors' => $errors, 'fixedCode' => $fixedCode];
+    $result['errors'] = $errors;
+    return $result;
+}
+
+function fix(array $errors, array $allStatements)
+{
+    foreach ($errors as $error) {
+        $rule = $error->getRule();
+        if (isset($rule['fixFunction'])) {
+            $error->setFixed($rule['fixFunction']($error->getNode()));
+        }
+    }
+
+    $prettyPrinter = new PrettyPrinter\Standard;
+    $fixedCode = $prettyPrinter->prettyPrintFile($allStatements);
+    return $fixedCode;
 }
 
 function buildReport($errors)
@@ -48,7 +60,7 @@ function buildReport($errors)
         $output = array_reduce($errors, function ($acc, $error) {
             $line = (new Color("{$error->getLine()}:"))->blue;
             $errorMark = sprintf("%-7s", $error->getName());
-            $errorMark = $error->isFixed() ? (new Color($errorMark))->green : (new Color($errorMark))->red;
+            $errorMark = $error->getFixed() ? (new Color($errorMark))->green : (new Color($errorMark))->red;
             $statement = "Statement: '{$error->getStmtName()}'.";
             $message = (new Color($error->getMessage()))->white;
             //$acc = implode(PHP_EOL, [$acc, "$line $errorMark $message"]);
