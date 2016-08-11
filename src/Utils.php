@@ -33,6 +33,25 @@ function getFilesByPath($path)
     }
 }
 
+function loadRules($path)
+{
+    //$json = json_encode(BASE_RULES);
+    //file_put_contents('baseRules.json', $json);
+    $result = [];
+    if (isset($path)) {
+        $files = getFilesByPath($path);
+        $result = array_reduce($files, function ($acc, $file) {
+            if (is_readable($file) && pathinfo($file, PATHINFO_EXTENSION) == 'json') {
+                $json = file_get_contents($file);
+                $acc = array_merge($acc, json_decode($json, true));
+            }
+            return $acc;
+        }, $result);
+    }
+    return $result;
+}
+
+
 function strToCamelCase($str)
 {
     $str = preg_replace('/([a-z])([A-Z])/', "\\1 \\2", $str);

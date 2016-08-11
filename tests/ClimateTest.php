@@ -2,8 +2,6 @@
 
 namespace HexletPsrLinter;
 
-use function \HexletPsrLinter\Utils\strToCamelCase;
-
 class ClimateTest extends \PHPUnit\Framework\TestCase
 {
     public function testHplError()
@@ -34,11 +32,5 @@ class ClimateTest extends \PHPUnit\Framework\TestCase
         $report = new HplReport($errors, $output);
         $this->assertEquals($errors, $report->getErrors());
         $this->assertEquals($output, $report->getOutput());
-    }
-
-    public function testStrToCamelCase()
-    {
-        $this->assertEquals("myVarName", strToCamelCase("_my_var_name"));
-        $this->assertEquals("myVarName", strToCamelCase("My_varNAME"));
     }
 }

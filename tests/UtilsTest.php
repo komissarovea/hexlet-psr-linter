@@ -3,7 +3,8 @@
 namespace HexletPsrLinter;
 
 use function \HexletPsrLinter\Utils\getFilesByPath;
-use function \HexletPsrLinter\loadRules;
+use function \HexletPsrLinter\Utils\loadRules;
+use function \HexletPsrLinter\Utils\strToCamelCase;
 
 class FileTest extends \PHPUnit\Framework\TestCase
 {
@@ -12,13 +13,6 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\HexletPsrLinter\Exceptions\FileException::class);
         getFilesByPath("fakeFile");
     }
-
-    // public function testNotReadableFile()
-    // {
-    //     $this->expectException(\HexletPsrLinter\Exceptions\FileException::class);
-    //     $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'NotReadableFile']);
-    //     getFilesByPath($path);
-    // }
 
     public function testFilePath()
     {
@@ -32,9 +26,15 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(2, count(getFilesByPath($path)));
     }
 
+    public function testStrToCamelCase()
+    {
+        $this->assertEquals("myVarName", strToCamelCase("_my_var_name"));
+        $this->assertEquals("myVarName", strToCamelCase("My_varNAME"));
+    }
+
     public function testLoadRules()
     {
         $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'testRules.json']);
-        $this->assertEquals(7, count(loadRules($path)));
+        $this->assertEquals(3, count(loadRules($path)));
     }
 }

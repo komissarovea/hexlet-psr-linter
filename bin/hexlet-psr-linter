@@ -10,7 +10,7 @@ use function \HexletPsrLinter\fix;
 use function \HexletPsrLinter\buildReport;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\getFilesByPath;
-use function \HexletPsrLinter\loadRules;
+use function \HexletPsrLinter\Utils\loadRules;
 
 //echo getcwd() . PHP_EOL;
 try {
@@ -29,14 +29,13 @@ try {
 
     $args = $cmd->getArgumentValues();
     $path = $args[0];
-
     $flags = $cmd->getFlagValues();
     $autoFix = $flags['f'];
     $format = $flags['m'];
     $rulesPath = $flags['r'];
 
     $files = getFilesByPath($path);
-    $rules = loadRules($rulesPath);
+    $rules = array_merge(\HexletPsrLinter\BASE_RULES, loadRules($rulesPath));
     foreach ($files as $file) {
         echo (new Color(realpath($file)))->white->underline . PHP_EOL;
         $fileContent = file_get_contents($file);
