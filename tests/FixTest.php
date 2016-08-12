@@ -24,7 +24,7 @@ class FixTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(7, count($result['errors']));
         $this->assertArrayHasKey('allStatements', $result);
 
-        $fixedCode = fix($result['errors'], $result['allStatements']);
+        $fixedCode = fix($result);
         $result = lint($fixedCode);
 
         $this->assertEquals(2, count($result['errors']));

@@ -34,24 +34,31 @@ function lint($input, $rules = BASE_RULES)
     return $result;
 }
 
-function fix(array $errors, array $allStatements)
+function fix($result)
 {
-    foreach ($errors as $error) {
-        $rule = $error->getRule();
-        if (isset($rule['fixFunction'])) {
-            $error->setFixed($rule['fixFunction']($error->getNode()));
+    if (isset($result['allStatements'])) {
+        $errors = $result['errors'];
+        $allStatements = $result['allStatements'];
+        foreach ($errors as $error) {
+            $rule = $error->getRule();
+            if (isset($rule['fixFunction'])) {
+                $fixed = $rule['fixFunction']($error->getNode());
+                $error->setFixed($fixed);
+            }
         }
-    }
 
-    $prettyPrinter = new PrettyPrinter\Standard;
-    $fixedCode = $prettyPrinter->prettyPrintFile($allStatements);
-    return $fixedCode;
+        $prettyPrinter = new PrettyPrinter\Standard;
+        $fixedCode = $prettyPrinter->prettyPrintFile($allStatements);
+        return $fixedCode;
+    }
+    return null;
 }
 
-function buildReport($errors, $format)
+function buildReport($sourcePath, $errors, $format)
 {
     $report = "";
     $dict = convertErrorsToDictionary($errors);
+    $dict['sourcePath'] = isset($sourcePath) ? realpath($sourcePath) : "";
     switch ($format) {
         case 'json':
             $report = json_encode($dict);
@@ -69,9 +76,10 @@ function buildReport($errors, $format)
                 $acc = "$acc $line $name $statement $message" . PHP_EOL;
                 return $acc;
             }, "");
+            $header = (new Color($dict['sourcePath']))->white->underline . PHP_EOL;
             $footer = "Total errors: $dict[totalErrors]" . PHP_EOL;
             $footer = $dict['totalErrors'] > 0 ? (new Color($footer))->red : (new Color($footer))->green;
-            $report = "$report $footer";
+            $report = "$header$report $footer";
             //break;
     }
     return $report;

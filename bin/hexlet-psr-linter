@@ -41,18 +41,19 @@ try {
 
     $files = getFilesByPath($path);
     $rules = array_merge(\HexletPsrLinter\BASE_RULES, loadRules($rulesPath));
-    foreach ($files as $file) {
-        echo (new Color(realpath($file)))->white->underline . PHP_EOL;
-        $fileContent = file_get_contents($file);
-        $result = lint($fileContent, $rules);
-        $errors = $result['errors'];
 
-        if ($autoFix && isset($result['allStatements'])) {
-            $fixedCode = fix($errors, $result['allStatements']);
-            file_put_contents($file, $fixedCode);
+    foreach ($files as $filePath) {
+        $result = lint(file_get_contents($filePath), $rules);
+
+        if ($autoFix) {
+            $fixedCode = fix($result);
+            if (isset($fixedCode)) {
+                file_put_contents($filePath, $fixedCode);
+            }
         }
 
-        $report = buildReport($errors, $format);
+        $errors = $result['errors'];
+        $report = buildReport($filePath, $errors, $format);
         echo $report . PHP_EOL;
 
         if (count($errors) > 0) {
