@@ -14,11 +14,12 @@
       "nikic/php-parser": "*",
       "nategood/commando": "*",
       "kevinlebrun/colors.php": "0.*",
-      "symfony/yaml" : "*"
+      "symfony/yaml" : "*",
+      "squizlabs/php_codesniffer": "*",
+      "symfony/polyfill-mbstring": "*"
     },
     "require-dev": {
       "phpunit/phpunit": "*",
-      "squizlabs/php_codesniffer": "*",
       "codeclimate/php-test-reporter": "dev-master",
       "psy/psysh": "@stable"
     },
