@@ -7,49 +7,97 @@ use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use Colors\Color;
+use Symfony\Component\Yaml\Yaml;
 
-function lint($input)
+function lint($input, $rules = BASE_RULES)
 {
+    $result = [];
     $errors = [];
     try {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $traverser = new NodeTraverser();
-        $rules = loadRules();
         $visitor = new HplNodeVisitor($rules);
         $traverser->addVisitor($visitor);
 
         $stmts = $parser->parse($input);
         if (count($stmts) === 0 || $stmts[0] instanceof Node\Stmt\InlineHTML) {
-            $errors[] = new HplError('error', -1, 'global', null, 'PHP statements were not found.');
+            $errors[] = new HplError(null, ['message' => 'PHP statements were not found.']);
         } else {
-            $traverser->traverse($stmts);
+            $stmts = $traverser->traverse($stmts);
             $errors = $visitor->getErrors();
+            $result['allStatements'] = $stmts;
         }
     } catch (\Throwable $e) {
-        $errors[] = new HplError('error', -1, 'global', null, $e->getMessage());
+        $errors[] = new HplError(null, ['message' => $e->getMessage()]);
     }
-    return $errors;
+    $result['errors'] = $errors;
+    return $result;
 }
 
-function buildReport($errors)
+function fix($result)
 {
-    $output = "";
-    $errorsCount = count($errors);
-    $footer = "Total errors: $errorsCount" . PHP_EOL;
-    $footer = $errorsCount > 0 ? (new Color($footer))->red
-      : (new Color($footer))->green;
-    if ($errorsCount > 0) {
-        $output = array_reduce($errors, function ($acc, $error) {
-            $line = (new Color("{$error->getLine()}:"))->blue;
-            $errorMark = (new Color(sprintf("%-7s", $error->getName())))->red;
-            $statement = "Statement: '{$error->getStmtName()}'.";
-            $message = (new Color($error->getMessage()))->white;
-            //$acc = implode(PHP_EOL, [$acc, "$line $errorMark $message"]);
-            $acc = "$acc $line $errorMark $statement $message" . PHP_EOL;
-            return $acc;
-        }, "");
+    if (isset($result['allStatements'])) {
+        $errors = $result['errors'];
+        $allStatements = $result['allStatements'];
+        foreach ($errors as $error) {
+            $rule = $error->getRule();
+            if (isset($rule['fixFunction'])) {
+                $fixed = $rule['fixFunction']($error->getNode());
+                $error->setFixed($fixed);
+            }
+        }
+
+        $prettyPrinter = new PrettyPrinter\Standard;
+        $fixedCode = $prettyPrinter->prettyPrintFile($allStatements);
+        return $fixedCode;
     }
-    $output = "$output $footer";
-    //$output = sprintf("%s %s %s", $output, PHP_EOL, $footer);
-    return new HplReport($errors, $output);
+    return null;
+}
+
+function buildReport($sourcePath, $errors, $format)
+{
+    $report = "";
+    $dict = convertErrorsToDictionary($errors);
+    $dict['sourcePath'] = isset($sourcePath) ? realpath($sourcePath) : "";
+    switch ($format) {
+        case 'json':
+            $report = json_encode($dict);
+            break;
+        case 'yml':
+            $report = Yaml::dump($dict);
+            break;
+        default:
+            $report = array_reduce($dict['errors'], function ($acc, $error) {
+                $line = (new Color("$error[line]:"))->blue;
+                $name = sprintf("%-7s", $error['name']);
+                $name = $error['fixed'] ? (new Color($name))->green : (new Color($name))->red;
+                $statement = "Statement: '$error[statement]'.";
+                $message = (new Color($error['message']))->white;
+                $acc = "$acc $line $name $statement $message" . PHP_EOL;
+                return $acc;
+            }, "");
+            $header = (new Color($dict['sourcePath']))->white->underline . PHP_EOL;
+            $footer = "Total errors: $dict[totalErrors]" . PHP_EOL;
+            $footer = $dict['totalErrors'] > 0 ? (new Color($footer))->red : (new Color($footer))->green;
+            $report = "$header$report $footer";
+            //break;
+    }
+    return $report;
+}
+
+function convertErrorsToDictionary($errors)
+{
+    $dict = [];
+    $dict['errors'] = array_map(function ($error) {
+        return [
+            'line' => $error->getLine(),
+            'name' => $error->getName(),
+            'fixed' => $error->getFixed(),
+            'statement' => $error->getStmtName(),
+            'message' => $error->getMessage()
+        ];
+    }, $errors);
+    $dict['totalErrors'] = count($errors);
+
+    return $dict;
 }

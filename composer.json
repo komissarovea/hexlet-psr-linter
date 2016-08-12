@@ -1,6 +1,8 @@
 {
     "name": "komissarovea/hexlet-psr-linter",
     "type": "library",
+    "description": "PHP Lint Library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Komissarov Eugene",
@@ -10,19 +12,22 @@
     "bin": ["bin/hexlet-psr-linter"],
     "require": {
       "nikic/php-parser": "*",
-      "nategood/commando": "*"
+      "nategood/commando": "*",
+      "kevinlebrun/colors.php": "0.*",
+      "symfony/yaml" : "*",
+      "squizlabs/php_codesniffer": "*",
+      "symfony/polyfill-mbstring": "*"
     },
     "require-dev": {
       "phpunit/phpunit": "*",
-      "squizlabs/php_codesniffer": "*",
       "codeclimate/php-test-reporter": "dev-master",
       "psy/psysh": "@stable"
     },
     "autoload": {
       "files": [
           "src/Linter.php",
+          "src/Rules/BaseRules.php",
           "src/Rules/RulesFunctions.php",
-          "src/Rules/RulesLoader.php",
           "src/Utils.php"
       ],
       "psr-4": {

@@ -10,5 +10,8 @@ lint:
 test:
 	composer exec 'phpunit tests'
 
+lintself:
+		bin/hexlet-psr-linter src
+
 beauty:
 	composer exec 'phpcbf --standard=PSR2 src bin'

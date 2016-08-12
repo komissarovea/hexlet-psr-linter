@@ -1,14 +1,21 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
 
 use Colors\Color;
 
 use function \HexletPsrLinter\lint;
+use function \HexletPsrLinter\fix;
 use function \HexletPsrLinter\buildReport;
 use function \HexletPsrLinter\Utils\formatErrorMessage;
 use function \HexletPsrLinter\Utils\getFilesByPath;
+use function \HexletPsrLinter\Utils\loadRules;
 
 //echo getcwd() . PHP_EOL;
 try {
@@ -16,32 +23,53 @@ try {
 
     $cmd = new \Commando\Command();
     $cmd->doNotTrapErrors();
-    $cmd->argument()
-        ->title('<path>')
-        ->describedAs('A file or folder to lint.')
-        ->require();
+    $cmd->argument()->title('<path>')->describedAs('A file or folder to lint.')->require();
+    $cmd->flag('f')->aka('fix')->describedAs('Fix errors if it is possible.')->boolean();
+    $cmd->flag('r')->aka('rules')->describedAs('A file or folder with your lint rules. See rulesSample.json.');
+    $cmd->option('m')->aka('format')->describedAs('When set, use this format for report. Values: text, json, yml.')
+        ->must(function ($format) {
+            $formats = array('text', 'json', 'yml');
+            return in_array($format, $formats);
+        });
 
     $args = $cmd->getArgumentValues();
     $path = $args[0];
+    $flags = $cmd->getFlagValues();
+    $autoFix = $flags['f'];
+    $format = $flags['m'];
+    $rulesPath = $flags['r'];
 
     $files = getFilesByPath($path);
-    foreach ($files as $file) {
-        echo (new Color(realpath($file)))->white->underline . PHP_EOL;
-        $fileContent = file_get_contents($file);
-        $errors = lint($fileContent);
-        if (!is_null($errors)) {
-            $report = buildReport($errors);
-            echo $report->getOutput() . PHP_EOL;
+    $rules = array_merge(\HexletPsrLinter\BASE_RULES, loadRules($rulesPath));
+
+    foreach ($files as $filePath) {
+        $result = lint(file_get_contents($filePath), $rules);
+
+        if ($autoFix) {
+            $fixedCode = fix($result);
+            if (isset($fixedCode)) {
+                file_put_contents($filePath, $fixedCode);
+            }
         }
 
-        if (is_null($errors) || count($errors) > 0) {
+        $errors = $result['errors'];
+        $report = buildReport($filePath, $errors, $format);
+        echo $report . PHP_EOL;
+
+        if (count($errors) > 0) {
             $exitCode = 1;
         }
     }
 
     exit($exitCode);
 } catch (Throwable $e) {
-    //echo get_class($e) . PHP_EOL;
-    echo formatErrorMessage($e->getMessage());
+    echo get_class($e) . PHP_EOL;
+    $message = $e->getMessage();
+    if (strpos($message, 'Required argument') !== false
+        || strpos($message, 'Unknown option') !== false
+        || strpos($message, 'for option r') !== false) {
+        $cmd->printHelp();
+    }
+    echo formatErrorMessage($message);
     return 1;
 }

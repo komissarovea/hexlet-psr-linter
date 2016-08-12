@@ -2,6 +2,8 @@
 
 namespace HexletPsrLinter;
 
+use function \HexletPsrLinter\Utils\strToCamelCase;
+
 const MAGIC_METHODS = ['__construct', '__destruct', '__call',
      '__callStatic', '__get', '__set', '__isset', '__unset',
      '__sleep', '__wakeup', '__toString', '__invoke', '__set_state',
@@ -40,10 +42,20 @@ function checkFuncDuplicate($node, array $acc)
 
 function checkVariableName($node)
 {
+    $result = true;
     if (isset($node->name)) {
-        return \PHP_CodeSniffer::isCamelCaps($node->name);
+        $result = \PHP_CodeSniffer::isCamelCaps($node->name);
     }
-    return true;
+    return $result;
+}
+
+function fixVariableName($node)
+{
+    if (isset($node->name)) {
+        $node->name = strToCamelCase($node->name);
+        return true;
+    }
+    return false;
 }
 
 function checkSideEffects($node, array $acc, $lastEndLine)

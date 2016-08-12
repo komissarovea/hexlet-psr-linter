@@ -7,43 +7,53 @@ namespace HexletPsrLinter;
  */
 class HplError
 {
-    private $name;
-    private $line;
-    private $stmtName;
-    private $stmtType;
-    private $message;
+    private $fixed = false;
+    private $node;
+    private $rule;
 
-    public function __construct($name, $line, $stmtName, $stmtType, $message)
+    public function __construct($node, array $rule)
     {
-        $this->name = $name;
-        $this->line = $line;
-        $this->stmtName = $stmtName;
-        $this->stmtType = $stmtType;
-        $this->message = $message;
+        $this->node = $node;
+        $this->rule = $rule;
+    }
+
+    public function getNode()
+    {
+        return $this->node;
+    }
+
+    public function getRule()
+    {
+        return $this->rule;
     }
 
     public function getName()
     {
-        return $this->name;
+        return $this->fixed ? "fixed" : "error";
     }
 
     public function getLine()
     {
-        return $this->line;
+        return is_null($this->node) ? -1 : $this->node->getLine();
     }
 
     public function getStmtName()
     {
-        return $this->stmtName;
-    }
-
-    public function getStmtType()
-    {
-        return $this->stmtType;
+        return isset($this->node->name) ? $this->node->name : 'undefined';
     }
 
     public function getMessage()
     {
-        return $this->message;
+        return $this->rule['message'];
+    }
+
+    public function getFixed()
+    {
+        return $this->fixed;
+    }
+
+    public function setFixed($value)
+    {
+        $this->fixed = $value;
     }
 }

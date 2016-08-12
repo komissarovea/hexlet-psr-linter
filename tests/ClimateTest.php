@@ -2,23 +2,27 @@
 
 namespace HexletPsrLinter;
 
-use function \HexletPsrLinter\Utils\getFilesByPath;
-
 class ClimateTest extends \PHPUnit\Framework\TestCase
 {
     public function testHplError()
     {
-        $name = 'name';
+        $name = 'error';
         $line = 1;
-        $stmtName = 'someMethod1';
-        $stmtType = 'PhpParser\Node\FunctionLike';
+        $stmtName = 'SomeFunction1';
+        $node = new \PhpParser\Node\Stmt\Function_($stmtName, array(), ['startLine' => $line]);
+
         $message = 'Method name is incorrect. Check PSR-2.';
-        $error = new HplError($name, $line, $stmtName, $stmtType, $message);
+        $rule = ['message' => $message];
+        $error = new HplError($node, $rule);
+
         $this->assertEquals($name, $error->getName());
         $this->assertEquals($line, $error->getLine());
         $this->assertEquals($stmtName, $error->getStmtName());
-        $this->assertEquals($stmtType, $error->getStmtType());
         $this->assertEquals($message, $error->getMessage());
+        $this->assertFalse($error->getFixed());
+
+        $error->setFixed(true);
+        $this->assertTrue($error->getFixed());
     }
 
     public function testHplReport()

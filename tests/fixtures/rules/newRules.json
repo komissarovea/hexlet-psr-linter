@@ -1,0 +1,15 @@
+{
+  "propertyName": {
+    "stmtType": "PhpParser\\Node\\Stmt\\PropertyProperty",
+    "functionsFile": "tests/fixtures/rules/newRulesFunctions.php",
+    "function": "SomeNewNamespace\\checkVariableName2",
+    "message": "2. Property name is incorrect. Use 'camelCase'.",
+    "needAcc": false
+  },
+  "variableName": {
+    "stmtType": "PhpParser\\Node\\Expr\\Variable",
+    "function": "SomeNewNamespace\\checkVariableName2",
+    "message": "2. Variable name is incorrect. Use 'camelCase'.",
+    "needAcc": false
+  }
+}

@@ -30,7 +30,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node)
     {
-        $nodeName = isset($node->name) ? $node->name : 'undefined';
+        //$nodeName = isset($node->name) ? $node->name : 'undefined';
         //echo get_class($node) . " $nodeName " . PHP_EOL;
         foreach ($this->rules as $rule) {
             $stmtType = $rule['stmtType'];
@@ -39,13 +39,7 @@ class HplNodeVisitor extends NodeVisitorAbstract
             }
             if (is_a($node, $stmtType) || is_subclass_of($node, $stmtType)) {
                 if (!$rule['function']($node, $this->acc[$stmtType], $this->lastEndLine)) {
-                    $this->errors[] = new HplError(
-                        'error',
-                        $node->getLine(),
-                        $nodeName,
-                        get_class($node),
-                        $rule['message']
-                    );
+                    $this->errors[] = new HplError($node, $rule);
                 }
 
                 if ($rule['needAcc'] && !in_array($node, $this->acc[$stmtType])) {
