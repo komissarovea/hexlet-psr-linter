@@ -72,7 +72,7 @@ function buildReport($errors, $format)
             $footer = "Total errors: $dict[totalErrors]" . PHP_EOL;
             $footer = $dict['totalErrors'] > 0 ? (new Color($footer))->red : (new Color($footer))->green;
             $report = "$report $footer";
-            break;
+            //break;
     }
     return $report;
 }
