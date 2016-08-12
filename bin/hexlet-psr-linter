@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+//require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 use Colors\Color;
 
@@ -20,7 +21,7 @@ try {
     $cmd->doNotTrapErrors();
     $cmd->argument()->title('<path>')->describedAs('A file or folder to lint.')->require();
     $cmd->flag('f')->aka('fix')->describedAs('Fix errors if it is possible.')->boolean();
-    $cmd->flag('r')->aka('rules')->describedAs('A file or folder with lint rules. See baseRules.json as sample.');
+    $cmd->flag('r')->aka('rules')->describedAs('A file or folder with your lint rules. See rulesSample.json.');
     $cmd->option('m')->aka('format')->describedAs('When set, use this format for report. Values: text, json, yml.')
         ->must(function ($format) {
             $formats = array('text', 'json', 'yml');

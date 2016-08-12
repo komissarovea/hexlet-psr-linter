@@ -35,15 +35,21 @@ function getFilesByPath($path)
 
 function loadRules($path)
 {
-    //$json = json_encode(BASE_RULES);
-    //file_put_contents('baseRules.json', $json);
+    //$json = json_encode(\HexletPsrLinter\BASE_RULES);
+    //file_put_contents('sampleRules.json', $json);
     $result = [];
     if (isset($path)) {
         $files = getFilesByPath($path);
         $result = array_reduce($files, function ($acc, $file) {
             if (is_readable($file) && pathinfo($file, PATHINFO_EXTENSION) == 'json') {
                 $json = file_get_contents($file);
-                $acc = array_merge($acc, json_decode($json, true));
+                $rules = json_decode($json, true);
+                foreach ($rules as $rule) {
+                    if (isset($rule['functionsFile'])) {
+                        include_once($rule['functionsFile']);
+                    }
+                }
+                $acc = array_merge($acc, $rules);
             }
             return $acc;
         }, $result);

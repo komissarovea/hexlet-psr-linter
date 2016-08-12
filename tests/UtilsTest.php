@@ -34,7 +34,12 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function testLoadRules()
     {
-        $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'testRules.json']);
-        $this->assertEquals(3, count(loadRules($path)));
+        $path = implode(DIRECTORY_SEPARATOR, [__DIR__, 'fixtures', 'rules', 'newRules.json']);
+        $rules = loadRules($path);
+        $this->assertEquals(2, count($rules));
+        $this->assertTrue($rules['variableName']['function'](null));
+
+        $node = new \PhpParser\Node\Stmt\PropertyProperty('_Abc');
+        $this->assertFalse($rules['propertyName']['function']($node));
     }
 }
