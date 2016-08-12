@@ -16,7 +16,7 @@ You can add `komissarovea/hexlet-psr-linter` to your `composer.json`
 Sample
 ------
 
-https://asciinema.org/a/5khr0fqcjsjum0s2gy7gacrau
+[![asciicast](https://asciinema.org/a/2gc67ednsgaeitszkexcj25ol.png)](https://asciinema.org/a/2gc67ednsgaeitszkexcj25ol)
 
 
 [![Build Status](https://travis-ci.org/komissarovea/hexlet-psr-linter.svg?branch=master)](https://travis-ci.org/komissarovea/hexlet-psr-linter)
